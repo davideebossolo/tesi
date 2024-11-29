@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SKEDE - Cyberpunk Menu</title>
+  <style>
+    /* Stile generale del corpo */
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  font-family: 'Courier New', Courier, monospace;
+  color: #e0e0e0;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  background-color: darkslategrey;
+}
+
+
+    /* Barra laterale per la selezione degli utenti */
+    .sidebar {
+      width: 20%;
+      background-color: #1a1a1a;
+      border-right: 2px solid #00ffff;
+      box-shadow: 4px 0 8px rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .sidebar h2 {
+      color: #00ffff;
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+
+    .user-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .user-list li {
+      margin-bottom: 10px;
+    }
+
+    .user-list a {
+      text-decoration: none;
+      color: #00ffff;
+      padding: 8px 12px;
+      border: 2px solid #00ffff;
+      border-radius: 5px;
+      display: block;
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    .user-list a:hover {
+      color: #ff00ff;
+      border-color: #ff00ff;
+    }
+
+    /* Contenuto principale */
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+/* Stile del menu cyberpunk */
+.cyberpunk-menu {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  background-color: #1a1a1a;
+  padding: 10px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.cyberpunk-menu img.logo {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.cyberpunk-menu a {
+  color: #00ffff;
+  text-decoration: none;
+  font-size: 1rem;
+  margin: 0 10px;
+  padding: 8px 12px;
+  border: 2px solid #00ffff;
+  border-radius: 5px;
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.cyberpunk-menu a:hover {
+  color: #ff00ff;
+  border-color: #ff00ff;
+}
+
+/* Contenitore per esercizio e timer */
+.exercise-container, .timer-container {
+  background-color: #1a1a1a;
+  border: 2px solid #00ffff;
+  border-radius: 12px;
+  padding: 20px;
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+  margin-top: 20px;
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
+}
+
+/* Stile dei nomi degli esercizi */
+.exercise-name {
+  font-size: 1.6rem;
+  color: #00ffff;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.exercise-details {
+  font-size: 1.2rem;
+  color: #e0e0e0;
+  margin-top: 10px;
+}
+
+/* Stile per ogni voce della scheda */
+.exercise-item {
+  margin: 5px 0;
+}
+
+.exercise-item strong {
+  color: #00ffff;
+  font-weight: bold;
+}
+
+/* Stile uniforme per tutti i pulsanti */
+.button {
+  margin-top: 15px;
+  padding: 12px 24px;
+  background-color: #00ffff;
+  border: none;
+  border-radius: 8px;
+  color: #1a1a1a;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.button:hover {
+  background-color: #ff00ff;
+  color: #ffffff;
+}
+
+/* Contenitore per i pulsanti Previous e Next */
+.exercise-controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  gap: 10px;
+}
+
+/* Stile del display del timer per effetto orologio digitale */
+.timer-display {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 3rem; /* Ridimensionato per schermi piccoli */
+  color: #00ffff;
+  
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 2px solid #00ffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.7); /* Bagliore verde */
+  text-align: center;
+  width: 100%; /* Larghezza completa per centraggio */
+  max-width: 200px;
+  margin: 20px auto;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Effetto al passaggio del mouse sul display del timer */
+.timer-display:hover {
+  color: #00ffff;
+  border-color: #00ffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+  transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Stile per i pulsanti di controllo del timer */
+.timer-controls .button {
+  font-size: 1.2rem;
+  padding: 8px 16px;
+  width: 80px; /* Uniformità nella dimensione */
+}
+
+/* Media Query per ottimizzare l'aspetto su iPhone e schermi più piccoli */
+@media (max-width: 480px) {
+  .cyberpunk-menu a {
+    font-size: 0.9rem;
+    padding: 6px 10px;
+    margin: 0 5px;
+  }
+
+  .cyberpunk-menu img.logo {
+    width: 25px;
+    height: 25px;
+    margin-right: 5px;
+  }
+
+  .exercise-container, .timer-container {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .exercise-name {
+    font-size: 1.4rem;
+  }
+
+  .exercise-details {
+    font-size: 1rem;
+  }
+
+  .button {
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+
+  .timer-display {
+    font-size: 2.5rem;
+    padding: 6px 12px;
+    max-width: 180px;
+  }
+
+  .timer-controls .button {
+    font-size: 1rem;
+    padding: 6px 10px;
+    width: 60px;
+  }
+}
+    /* Stile generale del corpo */
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      height: 100vh;
+      margin: 0;
+      font-family: 'Courier New', Courier, monospace;
+      color: #e0e0e0;
+      background-color: darkslategrey;
+      overflow: hidden;
+    }
+
+    /* Stile del menu principale */
+    .cyberpunk-menu {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      background-color: #1a1a1a;
+      padding: 10px 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .cyberpunk-menu img.logo {
+      width: 30px;
+      height: 30px;
+    }
+
+    .cyberpunk-menu a {
+      color: #00ffff;
+      text-decoration: none;
+      font-size: 1rem;
+      margin: 0 10px;
+      padding: 8px 12px;
+      border: 2px solid #00ffff;
+      border-radius: 5px;
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    .cyberpunk-menu a:hover {
+      color: #ff00ff;
+      border-color: #ff00ff;
+    }
+
+    /* Stile del bottone del menu (hamburger) */
+    .menu-button {
+      background: none;
+      border: none;
+      color: #00ffff;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .menu-button:hover {
+      color: #ff00ff;
+    }
+
+    /* Stile del menu a tendina laterale */
+    .dropdown-menu {
+  position: fixed;
+  top: 0;
+  left: -250px; /* Nasconde il menu inizialmente */
+  width: 250px;
+  height: 100%;
+  background-color: #1a1a1a;
+  border-right: 2px solid #00ffff;
+  box-shadow: 4px 0 8px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+  transition: left 0.3s ease-in-out;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.dropdown-menu.open {
+  left: 0; /* Mostra il menu */
+}
+
+
+
+    .user-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .user-list li {
+      margin-bottom: 10px;
+    }
+
+    .user-list a {
+      text-decoration: none;
+      color: #00ffff;
+      padding: 8px 12px;
+      border: 2px solid #00ffff;
+      border-radius: 5px;
+      display: block;
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    .user-list a:hover {
+      color: #ff00ff;
+      border-color: #ff00ff;
+    }
+
+    /* Contenuto principale */
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      box-sizing: border-box;
+      width: 100%;
+    }
+
+    /* Stile per esercizi e timer */
+    .exercise-container, .timer-container {
+      background-color: #1a1a1a;
+      border: 2px solid #00ffff;
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      margin-top: 20px;
+      box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
+    }
+
+    .button {
+      padding: 12px 24px;
+      background-color: #00ffff;
+      border: none;
+      border-radius: 8px;
+      color: #1a1a1a;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .button:hover {
+      background-color: #ff00ff;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  
+ 
+  <nav class="cyberpunk-menu">
+    <img src="/" alt="Logo" class="logo">
+    <a href="/">Home</a>
+    <a href="/avvia-esercizio">vai ad avvia esercizio</a>
+    <a href="/visualizza-dati-utente">visualizza circuiti</a>
+    <button class="menu-button" onclick="toggleMenu()">☰</button>
+
+  </nav>
+
+  <div class="dropdown-menu" id="dropdown-menu">
+    <h2>Seleziona Utente</h2>
+    <ul class="user-list">
+      <li><a href="#" onclick="viewUser('afonso')">Afonso</a></li>
+      <li><a href="#" onclick="viewUser('bruno')">Bruno</a></li>
+      <li><a href="#" onclick="viewUser('carla')">Carla</a></li>
+    </ul>
+  </div>
+  
+
+  <div class="exercise-container">
+    <div id="exercise-name" class="exercise-name">Caricamento...</div>
+    <div id="exercise-details" class="exercise-details"></div>
+    <div class="exercise-controls">
+      <button id="prev-exercise" class="button">Previous</button>
+      <button id="next-exercise" class="button">Next</button>
+    </div>
+  </div>
+
+  <div class="timer-container">
+    <div id="timer-display" class="timer-display">00:00.0</div>
+    <div class="timer-controls">
+      <button id="start-button" class="button">▶️</button>
+      <button id="stop-button" class="button">⏸️</button>
+      <button id="reset-button" class="button">🔄</button>
+    </div>
+  </div>
+  <h1>Carica File Excel in MongoDB</h1>
+  <form action="/upload" method="POST" enctype="multipart/form-data">
+      <label for="collectionName">Nome della collezione:</label>
+      <input type="text" id="collectionName" name="collectionName" required><br><br>
+
+      <label for="file">Carica file Excel:</label>
+      <input type="file" id="file" name="file" accept=".xlsx" required><br><br>
+
+      <button type="submit">Carica e Importa</button>
+  </form>
+
+  <script>
+    let exercises = [];
+    let currentExerciseIndex = 0;
+    let timerInterval;
+    let elapsedTime = 0;
+    let isRunning = false;
+  
+    function formatTime(ms) {
+      const minutes = Math.floor(ms / 60000);
+      const seconds = Math.floor((ms % 60000) / 1000);
+      const milliseconds = Math.floor((ms % 1000) / 100);
+      return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${milliseconds}`;
+    }
+  
+    function startTimer() {
+      if (!isRunning) {
+        const startTime = Date.now() - elapsedTime;
+        timerInterval = setInterval(() => {
+          elapsedTime = Date.now() - startTime;
+          document.getElementById('timer-display').textContent = formatTime(elapsedTime);
+        }, 100);
+        isRunning = true;
+      }
+    }
+  
+    function stopTimer() {
+      if (isRunning) {
+        clearInterval(timerInterval);
+        isRunning = false;
+      }
+    }
+  
+    function resetTimer() {
+      clearInterval(timerInterval);
+      elapsedTime = 0;
+      isRunning = false;
+      document.getElementById('timer-display').textContent = formatTime(elapsedTime);
+    }
+  
+    document.getElementById('start-button').addEventListener('click', startTimer);
+    document.getElementById('stop-button').addEventListener('click', stopTimer);
+    document.getElementById('reset-button').addEventListener('click', resetTimer);
+  
+    resetTimer(); // Imposta il timer inizialmente a 00:00.0
+  
+    async function loadExercises() {
+      try {
+        const response = await fetch('/allenamentoDelGiorno');
+        const data = await response.json();
+  
+        if (Array.isArray(data) && data.length > 0) {
+          exercises = data;
+          currentExerciseIndex = 0;
+          showExercise();
+        } else {
+          exercises = [{ esercizio: 'Nessun allenamento per oggi', serie: '', ripetizioni: '', note: '' }];
+          showExercise();
+        }
+      } catch (error) {
+        console.error('Errore nel caricamento degli esercizi:', error);
+      }
+    }
+  
+    function showExercise() {
+      const exerciseName = document.getElementById('exercise-name');
+      const exerciseDetails = document.getElementById('exercise-details');
+  
+      if (currentExerciseIndex >= exercises.length) {
+        // Mostra messaggio "Allenamento finito"
+        exerciseName.textContent = "Allenamento finito!";
+        exerciseDetails.innerHTML = `
+          <div class='exercise-item'>Complimenti! Hai completato tutti gli esercizi per oggi.</div>`;
+        document.getElementById('next-exercise').disabled = true; // Disabilita il pulsante "Next"
+      } else {
+        // Mostra l'esercizio corrente
+        const exercise = exercises[currentExerciseIndex];
+        exerciseName.textContent = exercise.esercizio || "Nessun esercizio";
+        exerciseDetails.innerHTML = `
+          <div class="exercise-item"><strong>Serie:</strong> ${exercise.serie || '-'}</div>
+          <div class="exercise-item"><strong>Ripetizioni:</strong> ${exercise.ripetizioni || '-'}</div>
+          <div class="exercise-item"><strong>Note:</strong> ${exercise.note || 'Nessuna nota'}</div>`;
+        document.getElementById('next-exercise').disabled = false; // Riabilita il pulsante "Next"
+      }
+    }
+  
+    // Passa all'esercizio successivo
+    document.getElementById('next-exercise').addEventListener('click', () => {
+      currentExerciseIndex++;
+      showExercise();
+    });
+  
+    // Passa all'esercizio precedente
+    document.getElementById('prev-exercise').addEventListener('click', () => {
+      if (currentExerciseIndex > 0) {
+        currentExerciseIndex--;
+        showExercise();
+      }
+    });
+  
+    loadExercises();
+  
+    async function viewUser(userName) {
+      try {
+        const response = await fetch(`/visualizza-dati-utente`);
+        const data = await response.json();
+  
+        // Mostra i dati nella pagina
+        const mainContent = document.querySelector('.main-content');
+        mainContent.innerHTML = `
+          <h2>Dati Utente: ${userName}</h2>
+          <pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } catch (error) {
+        console.error('Errore nel caricamento dei dati:', error);
+      }
+    }
+  
+    function toggleMenu() {
+      const menu = document.getElementById('dropdown-menu');
+      menu.classList.toggle('open');
+    }
+  </script>
+  
+</body>
+</html>

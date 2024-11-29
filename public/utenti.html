@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grafico Zoom e Pan</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+</head>
+<body>
+  <nav class="cyberpunk-menu">
+    <img src="/" alt="Logo" class="logo">
+    <a href="/">Home</a>
+    <a href="/">Crea circuito</a>
+    <a href="/">Visualizza circuiti</a>
+  </nav>
+
+  <div class="main-content">
+    <h1>Dati della Collezione</h1>
+    <div style="width: 80%; height: 400px; margin: 0 auto;">
+      <canvas id="data-chart"></canvas>
+    </div>
+    <button id="reset-zoom" class="button" style="margin-top: 20px;">Reset Zoom</button>
+  </div>
+
+  <script>
+    async function fetchAllData() {
+      try {
+        const response = await fetch('/user-data');
+        if (!response.ok) {
+          throw new Error('Errore durante il recupero dei dati.');
+        }
+
+        const data = await response.json();
+
+        const labels = data.map(item => new Date(item._time).toLocaleString());
+        const values = data.map(item => item._value);
+
+        renderChart(labels, values);
+      } catch (error) {
+        console.error('Errore:', error);
+        document.querySelector('.main-content').innerHTML = '<p>Errore nel caricamento dei dati.</p>';
+      }
+    }
+
+    function renderChart(labels, values) {
+      const ctx = document.getElementById('data-chart').getContext('2d');
+
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Valore Sensore',
+            data: values,
+            borderColor: '#00ffff',
+            backgroundColor: 'rgba(0, 255, 255, 0.2)',
+            borderWidth: 2,
+            pointRadius: 4,
+            pointBackgroundColor: '#ff00ff',
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          aspectRatio: 2,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Tempo',
+                color: '#00ffff',
+              },
+              ticks: {
+                color: '#e0e0e0',
+              },
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Valore',
+                color: '#00ffff',
+              },
+              ticks: {
+                color: '#e0e0e0',
+              },
+              beginAtZero: true,
+            }
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: '#e0e0e0',
+              }
+            },
+            zoom: {
+              pan: {
+                enabled: true, // Abilita il pan
+                mode: 'xy', // Permette di spostarsi sia su X che su Y
+                modifierKey: 'alt', // Si sposta solo tenendo premuto ALT
+              },
+              zoom: {
+                enabled: true, // Abilita lo zoom
+                mode: 'xy', // Permette di zoomare sia su X che su Y
+                wheel: {
+                  enabled: true, // Zoom con rotella
+                },
+                pinch: {
+                  enabled: true, // Zoom con gesture (touchscreen)
+                },
+              }
+            }
+          }
+        }
+      });
+
+      // Doppio clic per zoom
+      const canvas = document.getElementById('data-chart');
+      canvas.addEventListener('dblclick', () => {
+        chart.zoom(1.2); // Zoom del 20%
+      });
+
+      // Reset dello zoom
+      document.getElementById('reset-zoom').addEventListener('click', () => {
+        chart.resetZoom();
+      });
+    }
+
+    fetchAllData();
+  </script>
+</body>
+</html>
