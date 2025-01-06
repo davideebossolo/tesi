@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizza Misurazioni</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    color: #333333; /* Testo scuro per leggibilità */
+    background-color: #f5f5f5; /* Grigio chiaro per uno sfondo neutro */
+    overflow: auto;
+  }
+  
+  /* Stile del menu principale */
+  .cyberpunk-menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    background-color: #ffffff; /* Sfondo bianco per pulizia visiva */
+    padding: 10px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .cyberpunk-menu img.logo {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .cyberpunk-menu a {
+    color: #4caf50; /* Verde chiaro per i link */
+    text-decoration: none;
+    font-size: 1rem;
+    margin: 0 10px;
+    padding: 8px 12px;
+    border: 2px solid #4caf50;
+    border-radius: 5px;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  
+  .cyberpunk-menu a:hover {
+    color: #1976d2; /* Blu per hover */
+    border-color: #1976d2;
+  }
+  
+  /* Stile del bottone del menu (hamburger) */
+  .menu-button {
+    background: none;
+    border: none;
+    color: #4caf50; /* Verde per il bottone */
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .menu-button:hover {
+    color: #1976d2; /* Cambia in blu al passaggio */
+  }
+  
+  /* Stile del menu a tendina laterale */
+  .dropdown-menu {
+    position: fixed;
+    top: 0;
+    left: -250px; /* Nasconde il menu inizialmente */
+    width: 250px;
+    height: 100%;
+    background-color: #ffffff; /* Bianco per il menu */
+    border-right: 2px solid #4caf50;
+    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    transition: left 0.3s ease-in-out;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .dropdown-menu.open {
+    left: 0; /* Mostra il menu */
+  }
+  
+  .dropdown-menu h2 {
+    color: #4caf50; /* Verde chiaro */
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  .user-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .user-list li {
+    margin-bottom: 10px;
+  }
+  
+  .user-list a {
+    text-decoration: none;
+    color: #4caf50;
+    padding: 8px 12px;
+    border: 2px solid #4caf50;
+    border-radius: 5px;
+    display: block;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  
+  .user-list a:hover {
+    color: #1976d2;
+    border-color: #1976d2;
+  }
+  
+  /* Contenuto principale */
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  
+  /* Stile per esercizi e timer */
+  .exercise-container, .timer-container {
+    background-color: #ffffff; /* Bianco per contrasto */
+    border: 2px solid #4caf50; /* Verde per i bordi */
+    border-radius: 12px;
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    margin-top: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Ombra sottile per effetto 3D */
+  }
+  
+  /* Stile uniforme per tutti i pulsanti */
+  .button {
+    padding: 12px 24px;
+    background-color: #4caf50; /* Verde chiaro */
+    border: none;
+    border-radius: 8px;
+    color: #ffffff; /* Testo bianco */
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .button:hover {
+    background-color: #1976d2; /* Cambia in blu */
+    color: #ffffff;
+  }
+  
+  /* Display del timer con effetto pulito */
+  .timer-display {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 3rem;
+    color: #4caf50; /* Verde */
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 2px solid #4caf50;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.4); /* Bagliore tenue */
+    text-align: center;
+    width: 100%;
+    max-width: 200px;
+    margin: 20px auto;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .timer-display:hover {
+    color: #4caf50;
+    border-color: #4caf50;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
+  }
+  
+  /* Media Query per dispositivi mobili */
+  @media (max-width: 480px) {
+    .cyberpunk-menu a {
+      font-size: 0.9rem;
+      padding: 6px 10px;
+      margin: 0 5px;
+    }
+  
+    .cyberpunk-menu img.logo {
+      width: 25px;
+      height: 25px;
+    }
+  
+    .exercise-container, .timer-container {
+      width: 95%;
+      padding: 15px;
+    }
+  
+    .button {
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
+  
+    .timer-display {
+      font-size: 2.5rem;
+      padding: 6px 12px;
+      max-width: 180px;
+    }
+  }
+
+
+  .iframe-container {
+      margin-top: 20px;
+      border: 2px solid #4caf50;
+      border-radius: 12px;
+      overflow: hidden;
+      width: 200%;
+      max-width: 600px;
+      height: 250px;
+    }
+  
+    </style>
+</head>
+<body>
+  <h1>Dati Misurazioni</h1>
+  <button id="fetchDataBtn">Visualizza Dati</button>
+  
+  <h2>Tabella Misurazioni</h2>
+  <table id="data-table">
+    <thead>
+      <tr>
+        <!-- Intestazioni della tabella generate dinamicamente -->
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Dati inseriti qui -->
+    </tbody>
+  </table>
+
+  <h2>Grafico delle Misurazioni</h2>
+  <div id="chart-container">
+    <canvas id="dataChart"></canvas>
+  </div>
+
+  <h2>Embed Grafana</h2>
+  <div class="iframe-container">
+    <iframe src="http://localhost:3000/d-solo/be72soqduiy9sd/new-dashboard?orgId=1&from=1727769600000&to=1727773200000&timezone=browser&theme=dark&panelId=1&__feature.dashboardSceneSolo" width="100%" height="100%" frameborder="0"></iframe>
+  </div>
+
+  <script>
+    document.getElementById('fetchDataBtn').addEventListener('click', async () => {
+      console.log('Pulsante cliccato, inizio il fetch dei dati...');
+      const userId = 'alfonso'; 
+      try {
+        const response = await fetch(`/api/misurazioni`);
+        console.log('Risposta fetch ricevuta:', response);
+  
+        if (!response.ok) {
+          console.error('Errore risposta non OK:', response.status, response.statusText);
+          if (response.status === 404) {
+            console.error('Endpoint /api/misurazioni non trovato.');
+          } else if (response.status >= 500) {
+            console.error('Errore del server. Verifica il backend.');
+          }
+          throw new Error(`Errore HTTP ${response.status}: ${response.statusText}`);
+        }
+  
+        const data = await response.json();
+        console.log('Dati ricevuti dal server:', data);
+  
+        if (!Array.isArray(data)) {
+          console.error('Formato dati non valido. Atteso un array, ricevuto:', typeof data);
+          throw new Error('Formato dati non valido.');
+        }
+  
+        const tableHead = document.querySelector('#data-table thead tr');
+        const tableBody = document.querySelector('#data-table tbody');
+        const ctx = document.getElementById('dataChart').getContext('2d');
+  
+        tableHead.innerHTML = '';
+        tableBody.innerHTML = '';
+  
+        const labels = [];
+        const values = [];
+  
+        if (data.length > 0) {
+          console.log('Generazione intestazioni della tabella...');
+          Object.keys(data[0]).forEach(key => {
+            const th = document.createElement('th');
+            th.textContent = key;
+            tableHead.appendChild(th);
+          });
+        } else {
+          console.warn('Nessun dato trovato per la tabella.');
+        }
+  
+        data.forEach((item, index) => {
+          console.log(`Elaborazione riga ${index + 1}:`, item);
+  
+          const row = document.createElement('tr');
+          Object.values(item).forEach(value => {
+            const td = document.createElement('td');
+            td.textContent = value;
+            row.appendChild(td);
+          });
+          tableBody.appendChild(row);
+  
+          if (item._time && item._value) {
+            labels.push(item._time);
+            values.push(item._value);
+          } else {
+            console.warn('Elemento senza _time o _value:', item);
+          }
+        });
+  
+        console.log('Dati per il grafico:', { labels, values });
+  
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Valore nel Tempo',
+              data: values,
+              borderColor: 'blue',
+              backgroundColor: 'rgba(0, 0, 255, 0.1)',
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top'
+              }
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'Tempo'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: 'Valore'
+                }
+              }
+            }
+          }
+        });
+  
+        console.log('Grafico creato con successo.');
+  
+      } catch (error) {
+        console.error('Errore durante l\'esecuzione:', error);
+  
+        // Notifica visibile all'utente
+        alert(`Si è verificato un errore durante il caricamento dei dati: ${error.message}`);
+      }
+    });
+  
+  
+  </script>
+  
+</body>
+</html>

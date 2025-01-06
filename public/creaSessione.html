@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Crea Sessione di Allenamento</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      color: #555;
+    }
+    select, input[type="datetime-local"], button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .multi-select {
+      height: 150px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Crea Sessione di Allenamento</h1>
+  <form id="sessionForm">
+    <label for="utente">Seleziona Utente:</label>
+    <select id="utente" name="utente" required>
+      <option value="">Caricamento utenti...</option>
+    </select>
+
+    <label for="dataInizio">Data Inizio:</label>
+    <input type="datetime-local" id="dataInizio" name="dataInizio" required>
+
+    <label for="esercizi">Seleziona Esercizi:</label>
+    <select id="esercizi" name="esercizi" multiple class="multi-select" required>
+      <!-- Gli esercizi saranno caricati qui -->
+    </select>
+
+    <button type="submit">Crea Sessione</button>
+  </form>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  // Funzione per generare un ID univoco
+  function generaIdUnico() {
+    return `sess-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+  }
+
+  // Carica gli utenti dal backend
+  fetch('/api/users')
+    .then(response => response.json())
+    .then(users => {
+      const userSelect = document.getElementById('utente');
+      userSelect.innerHTML = '<option value="">-- Seleziona un utente --</option>';
+      users.forEach(user => {
+        const option = document.createElement('option');
+        option.value = user._id; // Assumendo che l'ID dell'utente sia in _id
+        option.textContent = user.username;
+        option.dataset.id = user._id;
+        option.dataset.username = user.username;
+        option.dataset.password = user.password; // Assicurati che sia gestito in modo sicuro
+        userSelect.appendChild(option);
+      });
+    })
+    .catch(error => {
+      console.error('Errore nel caricamento degli utenti:', error);
+      alert('Impossibile caricare gli utenti.');
+    });
+
+  // Carica gli esercizi dal backend
+  fetch('/api/esercizi')
+    .then(response => response.json())
+    .then(esercizi => {
+      const eserciziSelect = document.getElementById('esercizi');
+      esercizi.forEach(esercizio => {
+        const option = document.createElement('option');
+        option.value = esercizio._id; // Assumendo che l'ID dell'esercizio sia in _id
+        option.textContent = esercizio.nomeEsercizio;
+        option.dataset.id = esercizio._id;
+        option.dataset.nomeEsercizio = esercizio.nomeEsercizio;
+        eserciziSelect.appendChild(option);
+      });
+    })
+    .catch(error => {
+      console.error('Errore nel caricamento degli esercizi:', error);
+      alert('Impossibile caricare gli esercizi.');
+    });
+
+  // Gestione del submit del form
+  document.getElementById('sessionForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const userSelect = document.getElementById('utente');
+    const selectedUserOption = userSelect.options[userSelect.selectedIndex];
+    const userId = selectedUserOption.dataset.id;
+    const username = selectedUserOption.dataset.username;
+    const password = selectedUserOption.dataset.password;
+
+    const dataInizio = document.getElementById('dataInizio').value;
+
+    const eserciziSelect = document.getElementById('esercizi');
+    const selectedEserciziOptions = Array.from(eserciziSelect.selectedOptions);
+
+    if (selectedEserciziOptions.length === 0) {
+      alert('Seleziona almeno un esercizio.');
+      return;
+    }
+
+    // Costruisci l'array di esercizi da inserire in programmaEsercizi
+    const programmaEsercizi = selectedEserciziOptions.map(option => {
+      return {
+        id: option.dataset.id,
+        nomeEsercizio: option.dataset.nomeEsercizio,
+        dataInizio: dataInizio, // Usa la data di inizio della sessione
+        dataFine: null // Lascia vuoto o gestisci come preferisci
+      };
+    });
+
+    // Genera un ID univoco per la sessione
+    const sessionId = generaIdUnico();
+
+    // Costruisci l'oggetto sessione
+    const sessione = {
+      id: sessionId, // Includi l'ID generato
+      utente: {
+        id: userId,
+        username: username,
+        password: password // Assicurati di gestire le password in modo sicuro
+      },
+      dataInizio: dataInizio,
+      dataFine: null,
+      checkConnection: false,
+      programmaEsercizi: programmaEsercizi,
+      eserciziEseguiti: [],
+      esercizioCorrente: null
+    };
+
+    // Invia la richiesta POST al backend
+    fetch('/api/sessioni', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(sessione)
+    })
+    .then(response => response.json())
+    .then(data => {
+      alert('Sessione creata con successo! ID: ' + data.id);
+      // Reset del form
+      document.getElementById('sessionForm').reset();
+    })
+    .catch(error => {
+      console.error('Errore durante la creazione della sessione:', error);
+      alert('Errore durante la creazione della sessione.');
+    });
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const selectedDate = urlParams.get('data'); // Recupera la data selezionata dal query string
+
+  if (selectedDate) {
+    document.getElementById('dataInizio').value = `${selectedDate}T00:00`; // Preimposta la data
+  }
+
+  // Resto del codice...
+});
+
+</script>
+
+</body>
+</html>

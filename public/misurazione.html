@@ -4,13 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Avvia Esercizio</title>
-  <link rel="stylesheet" href="style.css">
   <style>
+.hidden {
+    display: none;
+  }
 :root {
-  --darkbg: #1c1c1c;
-  --btCinza: #222;
-  --icons: #eeff00;
-  --branco: #fff;
+  --background: #f9f9f9; /* Colore di sfondo chiaro */
+  --primary: #ffffff; /* Bianco per contenitori principali */
+  --secondary: #f0f0f0; /* Grigio chiaro per contenitori secondari */
+  --highlight: #4CAF50; /* Verde chiaro per accenti */
+  --text: #333333; /* Testo scuro */
+  --border: #e0e0e0; /* Bordo grigio chiaro */
+  --shadow: rgba(0, 0, 0, 0.1); /* Effetto ombra leggero */
+  --button-bg: #008cba; /* Colore pulsanti */
+  --button-hover: #005f8a; /* Colore pulsanti al passaggio del mouse */
 }
 
 * {
@@ -19,37 +26,71 @@
   padding: 0;
 }
 
-
 body {
-      background: var(--btCinza);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      height: 100vh;
-    }
+  background: var(--background);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Cambia align-items per allineare in alto */
+  flex-direction: column;
+  height: 100%; /* Cambiato da 100vh a 100% per evitare overflow */
+  overflow-x: hidden;
+  padding-top: 20px; /* Aggiungi spazio in alto */
+}
 
-    
 main {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px 0; /* Spazio interno per evitare tagli */
+}
+#activity-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 40px;
+  box-shadow: 0 4px 6px var(--shadow);
+  width: 80%;
+}
 
-    #activity-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin-top: 40px;
-    }
+#session-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
 
-    #activity-container h2 {
-      margin-bottom: 20px;
-      color: var(--icons);
-      font-size: 1.5rem;
-      text-align: center;
-    }
+  #session-header h1 {
+    font-size: 1.5rem;
+    color: var(--text);
+  }
+
+  #session-header p {
+    font-size: 1rem;
+    color: var(--text);
+  }
+
+#activity-container h2 {
+  margin-bottom: 20px;
+  color: var(--text);
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+div {
+  background: var(--primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px var(--shadow);
+}
 
 .boton-container {
   width: 20%;
@@ -61,6 +102,19 @@ main {
 
 #toggle-btn {
   -webkit-appearance: none;
+}
+
+/* Pulsanti */
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: var(--button-bg);
+  border: none;
+  border-radius: 4px;
+  color: var(--primary);
+  cursor: pointer;
+  box-shadow: 0 2px 4px var(--shadow);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .boton-wrapper {
@@ -338,15 +392,17 @@ main {
 
 
 #log-container {
-      width: 80%;
-      height: 70%;
-      background: rgba(20, 20, 20, 0.9);
-      border: 2px solid #00ff99;
-      border-radius: 8px;
-      overflow-y: auto;
-      padding: 20px;
-      box-shadow: 0 0 15px #00ff99;
-    }
+  width: 80%;
+  height: 70%;
+  background: rgba(20, 20, 20, 0.9);
+  border: 2px solid #00ff99;
+  border-radius: 8px;
+  overflow-y: auto;
+  padding: 20px;
+  box-shadow: 0 0 15px #00ff99;
+  margin-top: 40px; /* Aggiunto margine superiore per spostare più in basso */
+}
+
 
     .log-line {
       opacity: 0;
@@ -381,7 +437,7 @@ main {
       }
     }
 
-    /* Stile Cyberpunk per la lista degli esercizi */
+ /* Liste esercizi */
 #exercise-list-container {
   display: flex;
   flex-wrap: wrap;
@@ -392,75 +448,75 @@ main {
 
 .exercise-item {
   width: calc(50% - 20px);
-  background: rgba(20, 20, 20, 0.9);
-  border: 2px solid #00ff99;
+  background: var(--secondary);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 15px;
   text-align: center;
-  box-shadow: 0 0 15px rgba(0, 255, 153, 0.6);
+  box-shadow: 0 2px 4px var(--shadow);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .exercise-item:hover {
   transform: translateY(-5px) scale(1.05);
-  box-shadow: 0 0 25px rgba(0, 255, 153, 0.9);
+  box-shadow: 0 4px 6px var(--shadow);
 }
 
 .exercise-item strong {
   font-size: 1.2rem;
-  color: #00ff99;
+  color: var(--highlight);
 }
 
 .exercise-item button {
   margin-top: 15px;
   padding: 10px 20px;
   font-size: 16px;
-  background-color: #00ff99;
+  background-color: var(--highlight);
   border: none;
   border-radius: 4px;
-  color: #1c1c1c;
+  color: var(--primary);
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(0, 255, 153, 0.8);
+  box-shadow: 0 2px 4px var(--shadow);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .exercise-item button:hover {
-  background-color: #00cc88;
-  box-shadow: 0 0 15px rgba(0, 255, 153, 1);
+  background-color: #3e8e41;
+  box-shadow: 0 4px 6px var(--shadow);
 }
 
+/* Dettagli esercizio corrente */
 #current-exercise-details {
   margin: 20px 0;
   padding: 20px;
-  background: rgba(20, 20, 20, 0.9);
-  border: 2px solid #ff33cc;
+  background: var(--primary);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  box-shadow: 0 0 15px rgba(255, 51, 204, 0.6);
-  color: #fff;
+  box-shadow: 0 2px 4px var(--shadow);
+  color: var(--highlight);
   font-size: 1rem;
 }
 
 #current-exercise-details strong {
   font-size: 1.2rem;
-  color: #ff33cc;
+  color: var(--highlight);
 }
 
-/* Stile Cyberpunk per i dettagli della sessione */
+/* Contenitore dettagli sessione */
 #session-details-container {
   width: 80%;
-  height: auto;
-  background: rgba(20, 20, 20, 0.9);
-  border: 2px solid #3366ff;
+  background: var(--secondary);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 0 15px rgba(51, 102, 255, 0.6);
-  color: #fff;
+  box-shadow: 0 4px 6px var(--shadow);
+  color: var(--text);
   font-size: 1rem;
   overflow-y: auto;
 }
 
 #session-details-container h3 {
-  color: #3366ff;
+  color: var(--highlight);
   margin-bottom: 10px;
 }
 
@@ -480,23 +536,29 @@ main {
   justify-content: space-between;
   gap: 20px; /* Spaziatura tra gli elementi */
   padding: 20px;
-  background: rgba(20, 20, 20, 0.9); /* Sfondo scuro semi-trasparente */
+  background: var(--background); /* Sfondo scuro semi-trasparente */
   border: 2px solid #00ff99; /* Bordo Cyberpunk */
   border-radius: 8px; /* Angoli arrotondati */
   box-shadow: 0 0 15px rgba(0, 255, 153, 0.6); /* Effetto alone luminoso */
   margin: 20px auto; /* Centrare con margine */
   max-width: 80%; /* Limita la larghezza massima */
 }
-
+#session-and-log-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px; /* Spazio tra i due contenitori */
+  width: 80%;
+  margin: 20px auto;
+}
 
 .flex-container #current-exercise-details {
   flex-grow: 1; /* Rende il contenuto dei dettagli espandibile */
   padding: 20px;
-  background: rgba(20, 20, 20, 0.9); /* Sfondo scuro semi-trasparente */
+  background:var(--background); /* Sfondo scuro semi-trasparente */
   border: 2px solid #ff33cc; /* Bordo Cyberpunk viola */
   border-radius: 8px; /* Angoli arrotondati */
   box-shadow: 0 0 15px rgba(255, 51, 204, 0.6); /* Effetto alone luminoso */
-  color: #fff; /* Testo bianco */
+  color: #000000; /* Testo bianco */
   font-size: 1rem;
 }
 #timer-container {
@@ -539,19 +601,24 @@ main {
 </head>
 <body>
   <!-- Header -->
-  <header>
-    <h1>Benvenuto</h1>
-  </header>
-
   <!-- Main Section -->
   <main>
+    <div id="session-header">
+      <h1>Sessione di allenamento di: <span id="user-name">Nome Utente</span></h1>
+      <p>Data di inizio: <span id="start-date"></span></p>
+    </div>
+    <button id="start-session-button" style="padding: 10px 20px; font-size: 16px; background-color: #eeff00; border: none; border-radius: 4px; cursor: pointer; color: #222;">
+      Avvia Sessione
+    </button>
+    <div id="content" class="hidden">
     <div id="countdown-overlay"></div>
-
+    <div id="session-and-log-container">
     <div id="log-container"></div>
 
     <div id="session-details-container" style="width: 80%; margin: 20px auto;">
       <!-- Dettagli della sessione verranno generati dinamicamente -->
     </div>
+  </div>
  <!--
     <section class="boton-container">
       <input type="checkbox" id="toggle-btn" checked />
@@ -616,14 +683,13 @@ main {
       <div id="current-exercise-details">
       </div>
       </div>
-      <button id="start-session-button" style="padding: 10px 20px; font-size: 16px; background-color: #eeff00; border: none; border-radius: 4px; cursor: pointer; color: #222;">
-        Avvia Sessione
-      </button>
+      
       <div id="exercise-list-container" style="width: 80%; margin: 20px auto;">
         <!-- Gli esercizi verranno generati dinamicamente -->
       </div>
      
     </section>
+    </div>
   </main>
 
   <!-- Footer -->
@@ -633,6 +699,5 @@ main {
 
   <script src="classi.js"></script>
   <script src="sessione.js"></script>
-  <script src="log.js"></script>
 </body>
 </html>

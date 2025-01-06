@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendario</title>
+  <!-- FullCalendar CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.css" rel="stylesheet">
+  <!-- FullCalendar JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    #calendar {
+      max-width: 900px;
+      margin: 50px auto;
+    }
+    #popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border: 1px solid #ccc;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      max-width: 400px;
+      text-align: center;
+    }
+    #popup h2 {
+      margin: 0 0 10px;
+    }
+    #popup ul {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0;
+      text-align: left;
+    }
+    #popup ul li {
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #popup ul li button {
+      padding: 5px 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #popup ul li button:hover {
+      background: #0056b3;
+    }
+    #close-popup {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+    #close-popup:hover {
+      background: #a71d2a;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center;">Calendario allenamenti programmati</h1>
+  <div id="calendar"></div>
+  <div id="popup">
+    <button id="close-popup">&times;</button>
+    <h2>Allenamenti di oggi</h2>
+    <ul id="popup-list"></ul>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const calendarEl = document.getElementById('calendar');
+      const popup = document.getElementById('popup');
+      const popupList = document.getElementById('popup-list');
+      const closePopupButton = document.getElementById('close-popup');
+      let todaySessions = [];
+
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: async function (fetchInfo, successCallback, failureCallback) {
+          try {
+            const response = await fetch('/api/sessioni');
+            if (!response.ok) throw new Error('Errore durante il recupero delle sessioni');
+            const sessioni = await response.json();
+
+            const today = new Date().toISOString().split('T')[0]; // Ottieni la data di oggi (formato YYYY-MM-DD)
+
+            // Filtra sessioni per oggi
+            todaySessions = sessioni.filter(sessione => sessione.dataInizio.startsWith(today));
+
+            if (todaySessions.length > 0) {
+              popup.style.display = 'block'; // Mostra il popup
+              popupList.innerHTML = ""; // Svuota la lista
+              todaySessions.forEach(sessione => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                  <span>Utente: ${sessione.utente.username}, Inizio: ${sessione.dataInizio}</span>
+                  <button data-id="${sessione._id}" class="start-session-btn">Avvia</button>
+                `;
+                popupList.appendChild(listItem);
+              });
+
+              // Aggiungi evento click ai pulsanti di avvio
+              document.querySelectorAll('.start-session-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                  const sessionId = this.getAttribute('data-id');
+                  if (sessionId) {
+                    window.location.href = `/avvia-sessione?id=${sessionId}`;
+                  }
+                });
+              });
+            }
+
+            // Mappa sessioni per il calendario
+            const eventi = sessioni.map(sessione => ({
+              id: sessione._id,
+              title: `Utente: ${sessione.utente.username}`,
+              start: sessione.dataInizio,
+              end: sessione.dataFine || sessione.dataInizio,
+              description: sessione.programmaEsercizi.map(e => e.nomeEsercizio).join(', '),
+            }));
+
+            successCallback(eventi); // Passa gli eventi al calendario
+          } catch (error) {
+            console.error(error);
+            failureCallback(error);
+          }
+        },
+        dateClick: function (info) {
+          // Reindirizza alla pagina di creazione della sessione con la data selezionata
+          const selectedDate = info.dateStr; // Ottieni la data selezionata (formato YYYY-MM-DD)
+          window.location.href = `/crea-sessione?data=${selectedDate}`;
+        },
+        eventClick: function (info) {
+          alert(
+            `Dettagli sessione:\n` +
+            `Utente: ${info.event.title}\n` +
+            `Inizio: ${info.event.start.toISOString()}\n` +
+            `Fine: ${info.event.end ? info.event.end.toISOString() : 'N/A'}\n` +
+            `Esercizi: ${info.event.extendedProps.description}`
+          );
+        }
+      });
+
+      // Chiudi il popup
+      closePopupButton.addEventListener('click', function () {
+        popup.style.display = 'none';
+      });
+
+      calendar.render();
+    });
+  </script>
+</body>
+</html>

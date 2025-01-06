@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrazione Utente</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #1c1c1c;
+      color: #fff;
+    }
+
+    .register-container {
+      background: rgba(20, 20, 20, 0.9);
+      border: 2px solid #ff33cc;
+      border-radius: 8px;
+      padding: 30px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 0 15px rgba(255, 51, 204, 0.6);
+      text-align: center;
+    }
+
+    .register-container h1 {
+      color: #ff33cc;
+      margin-bottom: 20px;
+    }
+
+    .register-container label {
+      display: block;
+      text-align: left;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .register-container input[type="text"],
+    .register-container input[type="password"],
+    .register-container select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ff33cc;
+      border-radius: 4px;
+      background: #222;
+      color: #fff;
+    }
+
+    .register-container input[type="text"]:focus,
+    .register-container input[type="password"]:focus,
+    .register-container select:focus {
+      border-color: #ff66cc;
+      outline: none;
+    }
+
+    .register-container button {
+      background-color: #ff33cc;
+      color: #1c1c1c;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(255, 51, 204, 0.8);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .register-container button:hover {
+      background-color: #ff66cc;
+      box-shadow: 0 0 15px rgba(255, 102, 204, 1);
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <h1>Registrazione</h1>
+    <form id="registration-form" action="/register" method="POST">
+      <label for="id">ID</label>
+      <input type="text" id="id" name="id" readonly required>
+
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="Inserisci il tuo Username" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Inserisci la tua Password" required>
+
+      <label for="role">Ruolo</label>
+      <select id="role" name="role" required>
+        <option value="paziente">Paziente</option>
+        <option value="fisioterapista">Fisioterapista</option>
+      </select>
+
+      <button type="submit">Registra</button>
+    </form>
+  </div>
+
+  <script>
+    // Genera un ID alfanumerico univoco
+    function generaIdUnico() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let id = '';
+      for (let i = 0; i < 12; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return id;
+    }
+
+    // Pre-popola il campo ID con un valore generato
+    document.addEventListener('DOMContentLoaded', () => {
+      const idField = document.getElementById('id');
+      idField.value = generaIdUnico();
+    });
+  </script>
+</body>
+</html>

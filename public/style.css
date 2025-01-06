@@ -1,19 +1,26 @@
    /* Stile generale del corpo */
-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-  font-family: 'Courier New', Courier, monospace;
-  color: #e0e0e0;
-  padding: 10px;
-  box-sizing: border-box;
-  overflow-y: auto;
-  background-color: darkslategrey;
-}
-
-
+   body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: 100%; /* Modificato da 100vh a 100% */
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+    color: #e0e0e0;
+    background-color: darkslategrey;
+    overflow-x: hidden; /* Evita lo scroll orizzontale */
+    overflow-y: auto; /* Abilita lo scroll verticale */
+    padding: 10px; /* Spazio interno per un aspetto migliore */
+  }
+  
+  /* Stile per contenitori principali */
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;
+    overflow-y: auto; /* Scorrimento interno per il contenuto principale */
+  }
 
 
 
@@ -24,18 +31,6 @@ canvas {
   margin: 0 auto; /* Centra il grafico */
   max-width: 100%; /* Rende il grafico reattivo */
   height: 400px; /* Altezza fissa per evitare espansione */
-}
-
-.main-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-  height: 100%;
-  padding: 20px;
-  box-sizing: border-box;
-  overflow: hidden;
 }
 
     /* Stile per il menu laterale con animazione */

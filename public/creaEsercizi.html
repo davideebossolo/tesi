@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestione Esercizi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #4caf50;
+    }
+    .form-container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #4caf50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #1976d2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gestione Esercizi</h1>
+  <div class="form-container">
+    <h2>Crea un nuovo esercizio</h2>
+    <form id="createExerciseForm">
+      <div class="form-group">
+        <label for="exerciseId">ID Esercizio</label>
+        <input type="text" id="exerciseId" name="id" required>
+      </div>
+      <div class="form-group">
+        <label for="exerciseName">Nome Esercizio</label>
+        <input type="text" id="exerciseName" name="nomeEsercizio" required>
+      </div>
+      <div class="form-group">
+        <label for="patientName">Nome Paziente</label>
+        <input type="text" id="patientName" name="nomePaziente" required>
+      </div>
+      <fieldset>
+        <legend>Soglie Validità Dato</legend>
+        <div class="form-group">
+          <label for="validitaDatoMin">Valore Minimo</label>
+          <input type="number" id="validitaDatoMin" name="validitaDatoMin" required>
+        </div>
+        <div class="form-group">
+          <label for="validitaDatoMax">Valore Massimo</label>
+          <input type="number" id="validitaDatoMax" name="validitaDatoMax" required>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Soglie Correttezza Esecuzione</legend>
+        <div class="form-group">
+          <label for="correttezzaMin">Valore Minimo</label>
+          <input type="number" id="correttezzaMin" name="correttezzaMin" required>
+        </div>
+        <div class="form-group">
+          <label for="correttezzaMax">Valore Massimo</label>
+          <input type="number" id="correttezzaMax" name="correttezzaMax" required>
+        </div>
+      </fieldset>
+      <button type="submit">Crea Esercizio</button>
+    </form>
+  </div>
+  <div class="form-container">
+    <h2>Aggiorna soglie di un esercizio</h2>
+    <form id="updateThresholdForm">
+      <div class="form-group">
+        <label for="updateExerciseId">ID Esercizio</label>
+        <input type="text" id="updateExerciseId" name="id" required>
+      </div>
+      <fieldset>
+        <legend>Nuove Soglie Validità Dato</legend>
+        <div class="form-group">
+          <label for="newValiditaDatoMin">Valore Minimo</label>
+          <input type="number" id="newValiditaDatoMin" name="validitaDatoMin" required>
+        </div>
+        <div class="form-group">
+          <label for="newValiditaDatoMax">Valore Massimo</label>
+          <input type="number" id="newValiditaDatoMax" name="validitaDatoMax" required>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Nuove Soglie Correttezza Esecuzione</legend>
+        <div class="form-group">
+          <label for="newCorrettezzaMin">Valore Minimo</label>
+          <input type="number" id="newCorrettezzaMin" name="correttezzaMin" required>
+        </div>
+        <div class="form-group">
+          <label for="newCorrettezzaMax">Valore Massimo</label>
+          <input type="number" id="newCorrettezzaMax" name="correttezzaMax" required>
+        </div>
+      </fieldset>
+      <button type="submit">Aggiorna Soglie</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('createExerciseForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const exerciseData = {
+        id: formData.get('id'),
+        nomeEsercizio: formData.get('nomeEsercizio'),
+        nomePaziente: formData.get('nomePaziente'),
+        soglie: {
+          validitaDato: {
+            valoreMin: Number(formData.get('validitaDatoMin')),
+            valoreMax: Number(formData.get('validitaDatoMax')),
+          },
+          correttezzaEsecuzione: {
+            valoreMin: Number(formData.get('correttezzaMin')),
+            valoreMax: Number(formData.get('correttezzaMax')),
+          },
+        },
+      };
+
+      try {
+        const response = await fetch('/api/crea-esercizio', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(exerciseData),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          alert('Esercizio creato con successo!');
+        } else {
+          alert(`Errore: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Errore nella creazione dell\'esercizio:', error);
+        alert('Errore durante la creazione.');
+      }
+    });
+
+    document.getElementById('updateThresholdForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const exerciseId = formData.get('id');
+      const thresholds = {
+        validitaDato: {
+          valoreMin: Number(formData.get('validitaDatoMin')),
+          valoreMax: Number(formData.get('validitaDatoMax')),
+        },
+        correttezzaEsecuzione: {
+          valoreMin: Number(formData.get('correttezzaMin')),
+          valoreMax: Number(formData.get('correttezzaMax')),
+        },
+      };
+
+      try {
+        const response = await fetch(`/api/set-soglie/${exerciseId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ soglie: thresholds }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          alert('Soglie aggiornate con successo!');
+        } else {
+          alert(`Errore: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Errore nell\'aggiornamento delle soglie:', error);
+        alert('Errore durante l\'aggiornamento.');
+      }
+    });
+  </script>
+</body>
+</html>

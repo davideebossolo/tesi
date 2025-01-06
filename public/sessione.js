@@ -1,10 +1,23 @@
-// Riferimento al contenitore della lista degli esercizi e al pulsante di avvio della sessione
+
 const exerciseListContainer = document.getElementById("exercise-list-container");
 const startSessionButton = document.getElementById("start-session-button");
 
-// Riferimento al contenitore del log e alla sezione dell'esercizio corrente
 const logContainer = document.getElementById("log-container");
 const currentExerciseContainer = document.getElementById("current-exercise-details");
+
+const sessione = {
+  dataInizio: null,
+  dataFine: null,
+  checkConnection: false,
+  programmaEsercizi: [],
+  eserciziEseguiti: [],
+  esercizioCorrente: null,
+};
+
+document.getElementById("start-session-button").addEventListener("click", function () {
+  document.getElementById("content").classList.remove("hidden");
+  this.classList.add("hidden");
+});
 
 // Funzione per aggiungere un log al contenitore del log
 function addLog(message) {
@@ -45,14 +58,72 @@ function aggiornaEsercizioCorrente() {
   }
 }
 
-// Creazione di una sessione
-const sessione = new Sessione();
+// Funzione per aggiornare l'intestazione della sessione
 
-// Creazione di esercizi e aggiunta al programma
-const esercizio1 = new Esercizio(1, "Sollevamento pesi", "Mario Rossi");
-const esercizio2 = new Esercizio(2, "Trazioni alla sbarra", "Luigi Verdi");
-sessione.aggiungiEsercizio(esercizio1);
-sessione.aggiungiEsercizio(esercizio2);
+
+
+async function caricaSessioneDaApi() {
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get("id");
+
+  console.log("Debug - URL completo:", window.location.href);
+  console.log("Debug - sessionId trovato:", sessionId);
+
+  if (!sessionId) {
+    addLog("Errore: ID della sessione mancante.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/sessioni/${sessionId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Errore nella risposta dell'API: ${response.statusText}`);
+    }
+
+    const datiSessione = await response.json();
+    console.log("Debug - Dati sessione caricati:", datiSessione);
+
+    // Popola l'oggetto sessione
+    sessione.dataInizio = datiSessione.dataInizio || null;
+    sessione.dataFine = datiSessione.dataFine || null;
+    sessione.checkConnection = datiSessione.checkConnection || false;
+    sessione.programmaEsercizi = datiSessione.programmaEsercizi.map((esercizio) => ({
+      id: esercizio.id,
+      nomeEsercizio: esercizio.nomeEsercizio,
+      nomePaziente: datiSessione.utente.username,
+      dataInizio: esercizio.dataInizio || null,
+      dataFine: esercizio.dataFine || null,
+    }));
+    sessione.eserciziEseguiti = datiSessione.eserciziEseguiti || [];
+    sessione.esercizioCorrente = datiSessione.esercizioCorrente || null;
+
+
+    aggiornaSessionHeader();
+    aggiornaListaEsercizi();
+    aggiornaDettagliSessione();
+    addLog("Sessione caricata con successo.");
+  } catch (error) {
+    console.error("Errore nel caricamento della sessione:", error);
+    addLog("Errore nel caricamento della sessione. Riprova.");
+  }
+}
+
+
+
+
+
+// Esegui la funzione al caricamento della pagina
+document.addEventListener("DOMContentLoaded", () => {
+  caricaSessioneDaApi();
+});
+
+
 
 // Funzione per avviare la sessione
 function avviaSessione() {
@@ -122,7 +193,13 @@ function avviaEsercizio(id) {
   }
 }
 
+function aggiornaSessionHeader() {
+  const userNameSpan = document.getElementById("user-name");
+  const startDateSpan = document.getElementById("start-date");
 
+  userNameSpan.textContent = sessione.utente.username || "Nome Utente";
+  startDateSpan.textContent = sessione.dataInizio || "Data Non Disponibile";
+}
 // Funzione per creare dinamicamente la lista degli esercizi
 function aggiornaListaEsercizi() {
   exerciseListContainer.innerHTML = ""; // Svuota il contenitore

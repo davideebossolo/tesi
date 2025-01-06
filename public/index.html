@@ -5,20 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SKEDE - Cyberpunk Menu</title>
   <style>
-    /* Stile generale del corpo */
-body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
-  font-family: 'Courier New', Courier, monospace;
-  color: #e0e0e0;
-  padding: 10px;
-  box-sizing: border-box;
-  overflow-y: auto;
-  background-color: darkslategrey;
-}
+ body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: 100%; /* Modificato da 100vh a 100% */
+    margin: 0;
+    font-family: 'Courier New', Courier, monospace;
+    color: #e0e0e0;
+    background-color: darkslategrey;
+    overflow-x: hidden; /* Evita lo scroll orizzontale */
+    overflow-y: auto; /* Abilita lo scroll verticale */
+    padding: 10px; /* Spazio interno per un aspetto migliore */
+  }
+  
+
+
+  .user-info {
+      margin: 20px 0;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+      color:rgba(0, 0, 0, 0.5);
+    }
 
 
     /* Barra laterale per la selezione degli utenti */
@@ -61,12 +70,6 @@ body {
       border-color: #ff00ff;
     }
 
-    /* Contenuto principale */
-    .main-content {
-      flex: 1;
-      padding: 20px;
-      box-sizing: border-box;
-    }
 
 /* Stile del menu cyberpunk */
 .cyberpunk-menu {
@@ -241,18 +244,7 @@ body {
     width: 60px;
   }
 }
-    /* Stile generale del corpo */
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      height: 100vh;
-      margin: 0;
-      font-family: 'Courier New', Courier, monospace;
-      color: #e0e0e0;
-      background-color: darkslategrey;
-      overflow: hidden;
-    }
+
 
     /* Stile del menu principale */
     .cyberpunk-menu {
@@ -345,13 +337,6 @@ body {
       border-color: #ff00ff;
     }
 
-    /* Contenuto principale */
-    .main-content {
-      flex: 1;
-      padding: 20px;
-      box-sizing: border-box;
-      width: 100%;
-    }
 
     /* Stile per esercizi e timer */
     .exercise-container, .timer-container {
@@ -390,11 +375,20 @@ body {
   <nav class="cyberpunk-menu">
     <img src="/" alt="Logo" class="logo">
     <a href="/">Home</a>
-    <a href="/avvia-esercizio">vai ad avvia esercizio</a>
-    <a href="/visualizza-dati-utente">visualizza circuiti</a>
+    <a href="/visualizza-dati-utente">visualizza i miei dati </a>
+    <a href="/crea-esercizio">crea esercizio</a>
+    <a href="/login">login</a>
+    <a href="/register">registrazione</a>
+    <a href="/crea-sessione">crea sessione</a>
+    <a href="/calendario">calendario allenamenti</a>
     <button class="menu-button" onclick="toggleMenu()">☰</button>
 
   </nav>
+
+  <div id="welcome-message" class="welcome-message"></div>
+  <div id="user-info" class="user-info">
+    Caricamento dati utente...
+  </div>
 
   <div class="dropdown-menu" id="dropdown-menu">
     <h2>Seleziona Utente</h2>
@@ -404,24 +398,11 @@ body {
       <li><a href="#" onclick="viewUser('carla')">Carla</a></li>
     </ul>
   </div>
-  
 
-  <div class="exercise-container">
-    <div id="exercise-name" class="exercise-name">Caricamento...</div>
-    <div id="exercise-details" class="exercise-details"></div>
-    <div class="exercise-controls">
-      <button id="prev-exercise" class="button">Previous</button>
-      <button id="next-exercise" class="button">Next</button>
-    </div>
-  </div>
 
-  <div class="timer-container">
-    <div id="timer-display" class="timer-display">00:00.0</div>
-    <div class="timer-controls">
-      <button id="start-button" class="button">▶️</button>
-      <button id="stop-button" class="button">⏸️</button>
-      <button id="reset-button" class="button">🔄</button>
-    </div>
+  <div id="session-container" class="main-content">
+    <h2>Sessioni per Utente</h2>
+    <div id="user-sessions"></div>
   </div>
   <h1>Carica File Excel in MongoDB</h1>
   <form action="/upload" method="POST" enctype="multipart/form-data">
@@ -435,105 +416,6 @@ body {
   </form>
 
   <script>
-    let exercises = [];
-    let currentExerciseIndex = 0;
-    let timerInterval;
-    let elapsedTime = 0;
-    let isRunning = false;
-  
-    function formatTime(ms) {
-      const minutes = Math.floor(ms / 60000);
-      const seconds = Math.floor((ms % 60000) / 1000);
-      const milliseconds = Math.floor((ms % 1000) / 100);
-      return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${milliseconds}`;
-    }
-  
-    function startTimer() {
-      if (!isRunning) {
-        const startTime = Date.now() - elapsedTime;
-        timerInterval = setInterval(() => {
-          elapsedTime = Date.now() - startTime;
-          document.getElementById('timer-display').textContent = formatTime(elapsedTime);
-        }, 100);
-        isRunning = true;
-      }
-    }
-  
-    function stopTimer() {
-      if (isRunning) {
-        clearInterval(timerInterval);
-        isRunning = false;
-      }
-    }
-  
-    function resetTimer() {
-      clearInterval(timerInterval);
-      elapsedTime = 0;
-      isRunning = false;
-      document.getElementById('timer-display').textContent = formatTime(elapsedTime);
-    }
-  
-    document.getElementById('start-button').addEventListener('click', startTimer);
-    document.getElementById('stop-button').addEventListener('click', stopTimer);
-    document.getElementById('reset-button').addEventListener('click', resetTimer);
-  
-    resetTimer(); // Imposta il timer inizialmente a 00:00.0
-  
-    async function loadExercises() {
-      try {
-        const response = await fetch('/allenamentoDelGiorno');
-        const data = await response.json();
-  
-        if (Array.isArray(data) && data.length > 0) {
-          exercises = data;
-          currentExerciseIndex = 0;
-          showExercise();
-        } else {
-          exercises = [{ esercizio: 'Nessun allenamento per oggi', serie: '', ripetizioni: '', note: '' }];
-          showExercise();
-        }
-      } catch (error) {
-        console.error('Errore nel caricamento degli esercizi:', error);
-      }
-    }
-  
-    function showExercise() {
-      const exerciseName = document.getElementById('exercise-name');
-      const exerciseDetails = document.getElementById('exercise-details');
-  
-      if (currentExerciseIndex >= exercises.length) {
-        // Mostra messaggio "Allenamento finito"
-        exerciseName.textContent = "Allenamento finito!";
-        exerciseDetails.innerHTML = `
-          <div class='exercise-item'>Complimenti! Hai completato tutti gli esercizi per oggi.</div>`;
-        document.getElementById('next-exercise').disabled = true; // Disabilita il pulsante "Next"
-      } else {
-        // Mostra l'esercizio corrente
-        const exercise = exercises[currentExerciseIndex];
-        exerciseName.textContent = exercise.esercizio || "Nessun esercizio";
-        exerciseDetails.innerHTML = `
-          <div class="exercise-item"><strong>Serie:</strong> ${exercise.serie || '-'}</div>
-          <div class="exercise-item"><strong>Ripetizioni:</strong> ${exercise.ripetizioni || '-'}</div>
-          <div class="exercise-item"><strong>Note:</strong> ${exercise.note || 'Nessuna nota'}</div>`;
-        document.getElementById('next-exercise').disabled = false; // Riabilita il pulsante "Next"
-      }
-    }
-  
-    // Passa all'esercizio successivo
-    document.getElementById('next-exercise').addEventListener('click', () => {
-      currentExerciseIndex++;
-      showExercise();
-    });
-  
-    // Passa all'esercizio precedente
-    document.getElementById('prev-exercise').addEventListener('click', () => {
-      if (currentExerciseIndex > 0) {
-        currentExerciseIndex--;
-        showExercise();
-      }
-    });
-  
-    loadExercises();
   
     async function viewUser(userName) {
       try {
@@ -554,6 +436,135 @@ body {
       const menu = document.getElementById('dropdown-menu');
       menu.classList.toggle('open');
     }
+
+    async function loadSessions() {
+    try {
+      const response = await fetch('/api/sessioni'); // Endpoint per ottenere tutte le sessioni
+      const sessions = await response.json();
+
+      if (!Array.isArray(sessions) || sessions.length === 0) {
+        document.getElementById('user-sessions').innerHTML = '<p>Nessuna sessione trovata.</p>';
+        return;
+      }
+
+      // Raggruppa le sessioni per utente
+      const groupedSessions = sessions.reduce((acc, session) => {
+        const userId = session.utente.username || 'Sconosciuto'; // Usa il nome utente
+        if (!acc[userId]) {
+          acc[userId] = [];
+        }
+        acc[userId].push(session);
+        return acc;
+      }, {});
+
+      // Crea le div per ogni utente e le sue sessioni
+      const userSessionsContainer = document.getElementById('user-sessions');
+      userSessionsContainer.innerHTML = ''; // Pulisce il contenitore
+
+      Object.entries(groupedSessions).forEach(([username, userSessions]) => {
+        const userDiv = document.createElement('div');
+        userDiv.classList.add('user-section');
+        userDiv.style.marginBottom = '20px';
+
+        // Titolo dell'utente
+        const userTitle = document.createElement('h3');
+        userTitle.textContent = `Utente: ${username}`;
+        userDiv.appendChild(userTitle);
+
+        // Lista delle sessioni
+        userSessions.forEach((session) => {
+          const sessionDiv = document.createElement('div');
+          sessionDiv.classList.add('session-item');
+          sessionDiv.style.border = '1px solid #00ffff';
+          sessionDiv.style.padding = '10px';
+          sessionDiv.style.marginBottom = '10px';
+          sessionDiv.style.borderRadius = '8px';
+          sessionDiv.style.cursor = 'pointer';
+          sessionDiv.style.backgroundColor = '#1a1a1a';
+          sessionDiv.style.color = '#00ffff';
+
+          sessionDiv.innerHTML = `
+            <p><strong>ID Sessione:</strong> ${session._id}</p>
+            <p><strong>Data Inizio:</strong> ${session.dataInizio || 'N/A'}</p>
+            <p><strong>Data Fine:</strong> ${session.dataFine || 'In corso'}</p>
+            <p><strong>Esercizi:</strong> ${session.programmaEsercizi.map(e => e.nomeEsercizio).join(', ') || 'Nessuno'}</p>
+          `;
+
+          // Aggiunge l'evento click per aprire la pagina della sessione
+          sessionDiv.addEventListener('click', () => {
+            window.location.href = `/avvia-sessione?id=${session._id}`;
+          });
+
+          userDiv.appendChild(sessionDiv);
+        });
+
+        userSessionsContainer.appendChild(userDiv);
+      });
+    } catch (error) {
+      console.error('Errore nel caricamento delle sessioni:', error);
+      document.getElementById('user-sessions').innerHTML = '<p>Errore durante il caricamento delle sessioni.</p>';
+    }
+  }
+
+  // Carica le sessioni al caricamento della pagina
+  loadSessions();
+
+  document.addEventListener('DOMContentLoaded', async function () {
+      try {
+        const response = await fetch('/api/utente');
+        if (!response.ok) throw new Error('Errore durante il recupero dei dati utente');
+
+        const user = await response.json();
+
+        // Mostra i dati dell'utente
+        const userInfoDiv = document.getElementById('user-info');
+        userInfoDiv.innerHTML = `
+          <h2>Informazioni Utente</h2>
+          <p><strong>ID:</strong> ${user.id}</p>
+          <p><strong>Username:</strong> ${user.username}</p>
+        `;
+      } catch (error) {
+        console.error(error);
+        document.getElementById('user-info').textContent =
+          'Impossibile caricare i dati utente. Accedi di nuovo.';
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', async function () {
+      try {
+        const response = await fetch('/api/users');
+        if (!response.ok) throw new Error('Errore durante il recupero dei dati utente');
+
+        const user = await response.json();
+
+        // Mostra un messaggio di benvenuto
+        const welcomeMessage = document.getElementById('welcome-message');
+        welcomeMessage.textContent = `Benvenuto, ${user.username}!`;
+
+        // Nascondi i link se l'utente è un paziente semplice
+        if (user.role === 'paziente') {
+          document.querySelectorAll('.restricted').forEach(link => {
+            link.classList.add('hidden');
+          });
+          welcomeMessage.textContent += " Hai accesso come Paziente.";
+        } else {
+          welcomeMessage.textContent += " Hai accesso completo.";
+        }
+
+        // Mostra i dati dell'utente
+        const userInfoDiv = document.getElementById('user-info');
+        userInfoDiv.innerHTML = `
+          <h2>Informazioni Utente</h2>
+          <p><strong>ID:</strong> ${user.id}</p>
+          <p><strong>Username:</strong> ${user.username}</p>
+          <p><strong>Ruolo:</strong> ${user.role}</p>
+        `;
+      } catch (error) {
+        console.error(error);
+        document.getElementById('user-info').textContent =
+          'Impossibile caricare i dati utente. Accedi di nuovo.';
+      }
+    });
   </script>
   
 </body>
