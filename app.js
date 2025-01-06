@@ -4,7 +4,6 @@ const { MongoClient } = require('mongodb');
 const multer = require('multer');
 const path = require('path');
 const xlsx = require('xlsx'); // Importa il modulo xlsx
-const mongoose = require('mongoose');
 const PORT = 8080;
 const app = express();
 
