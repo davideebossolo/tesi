@@ -4,199 +4,286 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestione Esercizi</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
+      background-color: #f7f9fc;
       margin: 0;
-      padding: 20px;
-    }
-    h1, h2 {
       text-align: center;
-      color: #4caf50;
+      display: flex;
     }
-    .form-container {
-      max-width: 600px;
-      margin: 20px auto;
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    .container {
+  width: calc(100vw - 16rem);
+  margin-left: 16rem;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+    h1 {
+      color: #2c3e50;
     }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    input, button {
+
+    table {
       width: 100%;
-      padding: 10px;
-      border: 2px solid #4caf50;
-      border-radius: 5px;
-      font-size: 1rem;
+      border-collapse: collapse;
+      margin-top: 20px;
     }
-    button {
-      background-color: #4caf50;
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #2c3e50;
       color: white;
-      font-weight: bold;
+    }
+
+    button {
+      background-color: #2c3e50;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: 0.3s;
     }
+
     button:hover {
-      background-color: #1976d2;
+      background-color: #2c3e50;
     }
+
+    .form-container {
+  display: none;
+  margin-top: 20px;
+  text-align: left;
+  width: 100%;
+}
+
+
+    input {
+      width: calc(100% - 20px);
+      padding: 8px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    fieldset {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+
+    .exercise-image {
+  width: 150px;
+  height: 150px;
+  object-fit: contain; /* Mostra l'immagine interamente senza tagliarla */
+  border-radius: 5px;
+}
+
   </style>
 </head>
 <body>
-  <h1>Gestione Esercizi</h1>
-  <div class="form-container">
-    <h2>Crea un nuovo esercizio</h2>
-    <form id="createExerciseForm">
-      <div class="form-group">
-        <label for="exerciseId">ID Esercizio</label>
-        <input type="text" id="exerciseId" name="id" required>
-      </div>
-      <div class="form-group">
+
+  <div class="flex flex-col w-64 h-screen bg-gray-900 text-gray-400 fixed top-0 left-0">
+    <!-- Logo -->
+    <a class="flex items-center w-full px-4 mt-5 text-lg font-bold text-white">
+        <svg class="w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"></path>
+        </svg>
+        <span class="ml-2">The App</span>
+    </a>
+
+    <!-- User Info -->
+    <div class="flex flex-col items-center p-4 border-b border-gray-700">
+        <img id="user-image" class="w-20 h-20 rounded-full border-2 border-gray-700" src="user-placeholder.jpg" alt="User Image">
+        <h2 id="user-name" class="text-xl font-semibold mt-2">Nome Utente</h2>
+        <p id="user-role" class="text-md text-gray-400">Ruolo: Caricamento...</p>
+
+        <!-- Logout Button -->
+        <form id="logout-form" action="/api/autenticazione/logout" method="POST" class="w-full">
+            <button type="submit" class="w-full flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-semibold py-2 mt-3 rounded-md">
+                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            </button>
+        </form>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav class="flex flex-col flex-grow mt-4 space-y-2">
+        <a href="/main" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+            <i class="fas fa-home mr-3"></i> HOME
+        </a>
+        <a href="/visualizzaDati" id="menu-visualizza-dati" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+            <i class="fas fa-chart-bar mr-3"></i> Visualizza dati
+        </a>
+        <a href="/crea-esercizio" id="menu-create-exercise" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+            <i class="fas fa-dumbbell mr-3"></i> Crea esercizio
+        </a>
+        <a href="/calendario" id="menu-calendar" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+            <i class="fas fa-calendar-alt mr-3"></i> Calendario
+        </a>
+        <a href="/pazienti" id="menu-patient-list" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+            <i class="fas fa-user-injured mr-3"></i> Lista Pazienti
+        </a>
+    </nav>
+</div>
+
+
+
+  <div class="container">
+    <table>
+      <thead>
+        <tr>
+          <th>Immagine</th>
+          <th>Nome Esercizio</th>
+          <th>Data Creazione</th>
+          <th>Azione</th>
+        </tr>
+      </thead>
+      <tbody id="esercizi-list">
+        <!-- Esercizi caricati dinamicamente -->
+      </tbody>
+    </table>
+    <button id="showFormBtn">+ Aggiungi Esercizio</button>
+
+    <div class="form-container" id="createExerciseContainer">
+      <h2>Crea un nuovo esercizio</h2>
+      <form id="createExerciseForm">
         <label for="exerciseName">Nome Esercizio</label>
         <input type="text" id="exerciseName" name="nomeEsercizio" required>
+
+
+        <label for="exerciseImage">Nome Immagine</label>
+        <input type="text" id="exerciseImage" name="nomeImmagine" placeholder="esempio.jpg" required>
+
+        <button type="submit">Crea Esercizio</button>
+      </form>
+      <div class="log-container">
+        <ul id="logList"></ul>
       </div>
-      <div class="form-group">
-        <label for="patientName">Nome Paziente</label>
-        <input type="text" id="patientName" name="nomePaziente" required>
-      </div>
-      <fieldset>
-        <legend>Soglie Validità Dato</legend>
-        <div class="form-group">
-          <label for="validitaDatoMin">Valore Minimo</label>
-          <input type="number" id="validitaDatoMin" name="validitaDatoMin" required>
-        </div>
-        <div class="form-group">
-          <label for="validitaDatoMax">Valore Massimo</label>
-          <input type="number" id="validitaDatoMax" name="validitaDatoMax" required>
-        </div>
-      </fieldset>
-      <fieldset>
-        <legend>Soglie Correttezza Esecuzione</legend>
-        <div class="form-group">
-          <label for="correttezzaMin">Valore Minimo</label>
-          <input type="number" id="correttezzaMin" name="correttezzaMin" required>
-        </div>
-        <div class="form-group">
-          <label for="correttezzaMax">Valore Massimo</label>
-          <input type="number" id="correttezzaMax" name="correttezzaMax" required>
-        </div>
-      </fieldset>
-      <button type="submit">Crea Esercizio</button>
-    </form>
-  </div>
-  <div class="form-container">
-    <h2>Aggiorna soglie di un esercizio</h2>
-    <form id="updateThresholdForm">
-      <div class="form-group">
-        <label for="updateExerciseId">ID Esercizio</label>
-        <input type="text" id="updateExerciseId" name="id" required>
-      </div>
-      <fieldset>
-        <legend>Nuove Soglie Validità Dato</legend>
-        <div class="form-group">
-          <label for="newValiditaDatoMin">Valore Minimo</label>
-          <input type="number" id="newValiditaDatoMin" name="validitaDatoMin" required>
-        </div>
-        <div class="form-group">
-          <label for="newValiditaDatoMax">Valore Massimo</label>
-          <input type="number" id="newValiditaDatoMax" name="validitaDatoMax" required>
-        </div>
-      </fieldset>
-      <fieldset>
-        <legend>Nuove Soglie Correttezza Esecuzione</legend>
-        <div class="form-group">
-          <label for="newCorrettezzaMin">Valore Minimo</label>
-          <input type="number" id="newCorrettezzaMin" name="correttezzaMin" required>
-        </div>
-        <div class="form-group">
-          <label for="newCorrettezzaMax">Valore Massimo</label>
-          <input type="number" id="newCorrettezzaMax" name="correttezzaMax" required>
-        </div>
-      </fieldset>
-      <button type="submit">Aggiorna Soglie</button>
-    </form>
+    </div>
   </div>
 
   <script>
-    document.getElementById('createExerciseForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const formData = new FormData(event.target);
-      const exerciseData = {
-        id: formData.get('id'),
-        nomeEsercizio: formData.get('nomeEsercizio'),
-        nomePaziente: formData.get('nomePaziente'),
-        soglie: {
-          validitaDato: {
-            valoreMin: Number(formData.get('validitaDatoMin')),
-            valoreMax: Number(formData.get('validitaDatoMax')),
-          },
-          correttezzaEsecuzione: {
-            valoreMin: Number(formData.get('correttezzaMin')),
-            valoreMax: Number(formData.get('correttezzaMax')),
-          },
-        },
-      };
+  document.addEventListener('DOMContentLoaded', () => {
+    logAction('🔄 Caricamento esercizi...');
+    loadEsercizi();
+  });
 
-      try {
-        const response = await fetch('/api/crea-esercizio', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(exerciseData),
-        });
+  const createExerciseContainer = document.getElementById('createExerciseContainer');
+  const showFormBtn = document.getElementById('showFormBtn');
+  const createExerciseForm = document.getElementById('createExerciseForm');
 
-        const result = await response.json();
-        if (response.ok) {
-          alert('Esercizio creato con successo!');
-        } else {
-          alert(`Errore: ${result.error}`);
-        }
-      } catch (error) {
-        console.error('Errore nella creazione dell\'esercizio:', error);
-        alert('Errore durante la creazione.');
+  showFormBtn.addEventListener('click', () => {
+    createExerciseContainer.style.display = createExerciseContainer.style.display === 'block' ? 'none' : 'block';
+  });
+
+  // ✅ Creazione esercizio con nome immagine
+  createExerciseForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const exerciseData = {
+      nomeEsercizio: document.getElementById('exerciseName').value.trim(),
+      nomeImmagine: document.getElementById('exerciseImage').value.trim()
+    };
+
+    if (!exerciseData.nomeEsercizio || !exerciseData.nomeImmagine) {
+      logAction('⚠️ Tutti i campi sono obbligatori.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/crea-esercizio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(exerciseData),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        logAction('✅ Esercizio creato con successo!');
+        event.target.reset();
+        await loadEsercizi();
+      } else {
+        logAction(`⚠️ Errore: ${result.error}`);
       }
-    });
+    } catch (error) {
+      logAction('⚠️ Errore durante la creazione.');
+    }
+  });
 
-    document.getElementById('updateThresholdForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const formData = new FormData(event.target);
-      const exerciseId = formData.get('id');
-      const thresholds = {
-        validitaDato: {
-          valoreMin: Number(formData.get('validitaDatoMin')),
-          valoreMax: Number(formData.get('validitaDatoMax')),
-        },
-        correttezzaEsecuzione: {
-          valoreMin: Number(formData.get('correttezzaMin')),
-          valoreMax: Number(formData.get('correttezzaMax')),
-        },
-      };
+  // ✅ Funzione per caricare gli esercizi con immagini
+  async function loadEsercizi() {
+    try {
+      const response = await fetch('/api/esercizi');
+      if (!response.ok) throw new Error('Errore durante il recupero degli esercizi');
 
-      try {
-        const response = await fetch(`/api/set-soglie/${exerciseId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ soglie: thresholds }),
-        });
+      const esercizi = await response.json();
+      const eserciziTable = document.getElementById('esercizi-list');
+      eserciziTable.innerHTML = '';
 
-        const result = await response.json();
-        if (response.ok) {
-          alert('Soglie aggiornate con successo!');
-        } else {
-          alert(`Errore: ${result.error}`);
-        }
-      } catch (error) {
-        console.error('Errore nell\'aggiornamento delle soglie:', error);
-        alert('Errore durante l\'aggiornamento.');
+      if (esercizi.length === 0) {
+        eserciziTable.innerHTML = '<tr><td colspan="5">Nessun esercizio disponibile.</td></tr>';
+        return;
       }
-    });
+
+      esercizi.forEach(esercizio => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><img src="img/${esercizio.nomeImmagine}" alt="Esercizio" class="exercise-image"></td>
+          <td>${esercizio.nomeEsercizio}</td>
+          <td>${esercizio.dataCreazione ? new Date(esercizio.dataCreazione).toLocaleDateString() : 'N/A'}</td>
+          <td>
+            <button onclick="deleteEsercizio('${esercizio._id}')">ELIMINA</button>
+          </td>
+        `;
+        eserciziTable.appendChild(row);
+      });
+    } catch (error) {
+      logAction('⚠️ Errore nel caricamento degli esercizi.');
+    }
+  }
+
+  // ✅ Funzione per eliminare un esercizio
+  async function deleteEsercizio(id) {
+    if (!confirm('Sei sicuro di voler eliminare questo esercizio?')) return;
+
+    try {
+      const response = await fetch(`/api/esercizi/${id}`, { method: 'DELETE' });
+
+      if (response.ok) {
+        logAction('✅ Esercizio eliminato con successo!');
+        await loadEsercizi();
+      } else {
+        const error = await response.json();
+        logAction(`⚠️ Errore eliminazione: ${error.error}`);
+      }
+    } catch (error) {
+      logAction('⚠️ Errore durante l\'eliminazione.');
+    }
+  }
+
+  function logAction(message) {
+    const logList = document.getElementById('logList');
+    const logEntry = document.createElement('li');
+    logEntry.textContent = `${new Date().toLocaleTimeString()} - ${message}`;
+    logList.appendChild(logEntry);
+  }
   </script>
+
+<script src="fetchUserInfo.js"></script>
+<script src="fetchPatientList.js"></script>
+<script src="fetchCalendar.js"></script>
+<script src="authHandler.js"></script>
+
 </body>
 </html>

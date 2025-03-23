@@ -5,361 +5,529 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Visualizza Misurazioni</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-  body {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    height: 100vh;
-    margin: 0;
-    font-family: 'Arial', sans-serif;
-    color: #333333; /* Testo scuro per leggibilità */
-    background-color: #f5f5f5; /* Grigio chiaro per uno sfondo neutro */
-    overflow: auto;
-  }
-  
-  /* Stile del menu principale */
-  .cyberpunk-menu {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    background-color: #ffffff; /* Sfondo bianco per pulizia visiva */
-    padding: 10px 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .cyberpunk-menu img.logo {
-    width: 30px;
-    height: 30px;
-  }
-  
-  .cyberpunk-menu a {
-    color: #4caf50; /* Verde chiaro per i link */
-    text-decoration: none;
-    font-size: 1rem;
-    margin: 0 10px;
-    padding: 8px 12px;
-    border: 2px solid #4caf50;
-    border-radius: 5px;
-    transition: color 0.3s, border-color 0.3s;
-  }
-  
-  .cyberpunk-menu a:hover {
-    color: #1976d2; /* Blu per hover */
-    border-color: #1976d2;
-  }
-  
-  /* Stile del bottone del menu (hamburger) */
-  .menu-button {
-    background: none;
-    border: none;
-    color: #4caf50; /* Verde per il bottone */
-    font-size: 1.5rem;
-    cursor: pointer;
-  }
-  
-  .menu-button:hover {
-    color: #1976d2; /* Cambia in blu al passaggio */
-  }
-  
-  /* Stile del menu a tendina laterale */
-  .dropdown-menu {
-    position: fixed;
-    top: 0;
-    left: -250px; /* Nasconde il menu inizialmente */
-    width: 250px;
-    height: 100%;
-    background-color: #ffffff; /* Bianco per il menu */
-    border-right: 2px solid #4caf50;
-    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
-    overflow-y: auto;
-    transition: left 0.3s ease-in-out;
-    padding: 20px;
-    box-sizing: border-box;
-  }
-  
-  .dropdown-menu.open {
-    left: 0; /* Mostra il menu */
-  }
-  
-  .dropdown-menu h2 {
-    color: #4caf50; /* Verde chiaro */
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-  }
-  
-  .user-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .user-list li {
-    margin-bottom: 10px;
-  }
-  
-  .user-list a {
-    text-decoration: none;
-    color: #4caf50;
-    padding: 8px 12px;
-    border: 2px solid #4caf50;
-    border-radius: 5px;
-    display: block;
-    transition: color 0.3s, border-color 0.3s;
-  }
-  
-  .user-list a:hover {
-    color: #1976d2;
-    border-color: #1976d2;
-  }
-  
-  /* Contenuto principale */
-  .main-content {
-    flex: 1;
-    padding: 20px;
-    box-sizing: border-box;
-    width: 100%;
-  }
-  
-  /* Stile per esercizi e timer */
-  .exercise-container, .timer-container {
-    background-color: #ffffff; /* Bianco per contrasto */
-    border: 2px solid #4caf50; /* Verde per i bordi */
-    border-radius: 12px;
-    padding: 20px;
-    width: 100%;
-    max-width: 500px;
-    text-align: center;
-    margin-top: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Ombra sottile per effetto 3D */
-  }
-  
-  /* Stile uniforme per tutti i pulsanti */
-  .button {
-    padding: 12px 24px;
-    background-color: #4caf50; /* Verde chiaro */
-    border: none;
-    border-radius: 8px;
-    color: #ffffff; /* Testo bianco */
-    font-size: 1.2rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-  }
-  
-  .button:hover {
-    background-color: #1976d2; /* Cambia in blu */
-    color: #ffffff;
-  }
-  
-  /* Display del timer con effetto pulito */
-  .timer-display {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 3rem;
-    color: #4caf50; /* Verde */
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: 2px solid #4caf50;
-    box-shadow: 0 0 15px rgba(76, 175, 80, 0.4); /* Bagliore tenue */
-    text-align: center;
-    width: 100%;
-    max-width: 200px;
-    margin: 20px auto;
-    transition: all 0.2s ease-in-out;
-  }
-  
-  .timer-display:hover {
-    color: #4caf50;
-    border-color: #4caf50;
-    box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
-  }
-  
-  /* Media Query per dispositivi mobili */
-  @media (max-width: 480px) {
-    .cyberpunk-menu a {
-      font-size: 0.9rem;
-      padding: 6px 10px;
-      margin: 0 5px;
-    }
-  
-    .cyberpunk-menu img.logo {
-      width: 25px;
-      height: 25px;
-    }
-  
-    .exercise-container, .timer-container {
-      width: 95%;
-      padding: 15px;
-    }
-  
-    .button {
-      padding: 10px 20px;
-      font-size: 1rem;
-    }
-  
-    .timer-display {
-      font-size: 2.5rem;
-      padding: 6px 12px;
-      max-width: 180px;
-    }
-  }
-
-
-  .iframe-container {
-      margin-top: 20px;
-      border: 2px solid #4caf50;
-      border-radius: 12px;
-      overflow: hidden;
-      width: 200%;
-      max-width: 600px;
-      height: 250px;
-    }
-  
-    </style>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-  <h1>Dati Misurazioni</h1>
-  <button id="fetchDataBtn">Visualizza Dati</button>
+  <p id="error-message"></p>
   
-  <h2>Tabella Misurazioni</h2>
-  <table id="data-table">
-    <thead>
-      <tr>
-        <!-- Intestazioni della tabella generate dinamicamente -->
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Dati inseriti qui -->
-    </tbody>
-  </table>
-
-  <h2>Grafico delle Misurazioni</h2>
-  <div id="chart-container">
-    <canvas id="dataChart"></canvas>
+  <div class="flex flex-col w-64 h-screen bg-gray-900 text-gray-400 fixed top-0 left-0">
+    <a class="flex items-center w-full px-4 mt-5 text-lg font-bold text-white">
+      <svg class="w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"></path>
+      </svg>
+      <span class="ml-2">The App</span>
+    </a>
+    <!-- Informazioni Utente -->
+    <div class="flex flex-col items-center p-4 border-b border-gray-700">
+      <img id="user-image" class="w-20 h-20 rounded-full border-2 border-gray-700" src="user-placeholder.jpg" alt="User Image">
+      <h2 id="user-name" class="text-xl font-semibold mt-2">Nome Utente</h2>
+      <p id="user-role" class="text-md text-gray-400">Ruolo: Caricamento...</p>
+      <!-- Bottone Logout -->
+      <form id="logout-form" action="/api/autenticazione/logout" method="POST" class="w-full">
+        <button type="submit" class="w-full flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-semibold py-2 mt-3 rounded-md">
+          <i class="fas fa-sign-out-alt mr-2"></i> Logout
+        </button>
+      </form>
+    </div>
+    <!-- Navigazione -->
+    <nav class="flex flex-col flex-grow mt-4 space-y-2">
+      <a href="/main" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+        <i class="fas fa-home mr-3"></i> HOME
+      </a>
+      <a href="/visualizzaDati" id="menu-visualizza-dati" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+        <i class="fas fa-chart-bar mr-3"></i> Visualizza dati
+      </a>
+      <a href="/crea-esercizio" id="menu-create-exercise" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+        <i class="fas fa-dumbbell mr-3"></i> Crea esercizio
+      </a>
+      <a href="/calendario" id="menu-calendar" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+        <i class="fas fa-calendar-alt mr-3"></i> Calendario
+      </a>
+      <a href="/pazienti" id="menu-patient-list" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+        <i class="fas fa-user-injured mr-3"></i> Lista Pazienti
+      </a>
+    </nav>
   </div>
 
-  <h2>Embed Grafana</h2>
-  <div class="iframe-container">
-    <iframe src="http://localhost:3000/d-solo/be72soqduiy9sd/new-dashboard?orgId=1&from=1727769600000&to=1727773200000&timezone=browser&theme=dark&panelId=1&__feature.dashboardSceneSolo" width="100%" height="100%" frameborder="0"></iframe>
+  <!-- Contenuto Principale -->
+  <div class="main-content ml-64 p-6 min-h-screen">
+    <!-- Sezione Dettaglio Allenamento in alto -->
+    <div class="p-6 bg-gray-100 shadow-md rounded-lg mb-6">
+        <h1 class="text-3xl font-bold mb-4">Dettagli allenamento</h1>
+        <div class="flex items-start space-x-6">
+          <!-- Colonna Sinistra: Dettagli Allenamento -->
+          <div class="w-1/2 pr-4 border-r border-gray-300">
+            <div class="mb-4">
+              <p class="text-xl font-semibold">
+                Nome utente: <span id="user-name-top">Giuseppe Verdi</span>
+              </p>
+              <p class="text-md text-gray-600">
+                Data: <span id="training-date">01/01/2025</span><br>
+                Durata totale: <span id="training-date">1 ora 20 minuti e 45 secondi</span><br>
+                Esercizi eseguiti <span id="training-date">3/3</span><br>
+                <span id="training-date"></span><br>
+              </p>
+            </div>
+            <!-- (Eventuali ulteriori dettagli dell'allenamento) -->
+          </div>
+          <!-- Colonna Destra: Dettagli Esercizio Corrente -->
+          <div class="w-1/2 pl-4">
+            <!-- Titolo dei Dettagli Esercizio -->
+            <h2 class="text-2xl font-bold text-black mb-4">Dettagli Esercizio</h2>
+            <div class="flex items-center space-x-4 mb-4">
+              <img src="img/alzatelaterali.jpg" alt="Esercizio AL" class="w-16 h-16 object-cover rounded">
+              <div>
+                <h3 class="text-2xl font-bold text-black" id="current-exercise-title">Alzate Laterali</h3>
+                <p class="text-md text-gray-600">
+                  Durata totale: <span id="exercise-duration">3 minuti e 20 secondi</span>
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <select id="next-exercise-select" class="p-2 border border-gray-300 rounded-md" style="width: auto;">
+                <option value="AL" selected>Alzate Laterali</option>
+                <option value="EB">Alzate Frontali</option>
+                <option value="EC">Rematore</option>
+              </select>
+              <button id="change-view-btn" class="bg-blue-900 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition">
+                Cambia visualizzazione
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+      
+    <div id="session-title"></div>
+    
+    <!-- Card principale: senza limiti di larghezza per sfruttare tutto lo spazio disponibile -->
+    <div class="bg-white shadow-lg rounded-lg p-6 w-full">
+
+
+        <div class="flex justify-center space-x-4 mb-4">
+            <button onclick="toggleView('battito')" class="toggle-btn bg-blue-900 text-white px-5 py-2 rounded-md shadow hover:bg-blue-900 transition">
+              <i class="fas fa-heartbeat mr-2"></i> Frequenza cardiaca
+            </button>
+            <button onclick="toggleView('accelerometro')" class="toggle-btn bg-blue-900 text-white px-5 py-2 rounded-md shadow hover:bg-blue-900 transition">
+              <i class="fas fa-arrow-up mr-2"></i> Accelerometro
+            </button>
+            <button onclick="toggleView('giroscopio')" class="toggle-btn bg-blue-900 text-white px-5 py-2 rounded-md shadow hover:bg-blue-900 transition">
+              <i class="fas fa-compass mr-2"></i> Giroscopio
+            </button>
+            <button id="goToTableBattito" class="px-6 py-2 bg-blue-900 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300 shadow-md">
+              Visualizza dati in tabella
+            </button>
+          </div>
+    
+
+      <!-- Visualizzazione: Frequenza Cardiaca -->
+      <div id="battitoCardiaco">
+        <h1 class="text-center text-2xl font-bold text-gray-800">Frequenza cardiaca</h1>
+        <div class="mt-6 flex justify-center">
+          
+        </div>
+        <script>
+          document.getElementById("goToTableBattito").addEventListener("click", async function() {
+            const params = new URLSearchParams(window.location.search);
+            const sessionId = params.get("idSessione");
+            const userId = params.get("idUtente");
+            const tipoVisualizzazione = "battitoCardiaco"; // Visualizzazione fissa
+
+            if (!sessionId || !userId) {
+              alert("Dati mancanti per la navigazione alla tabella.");
+              return;
+            }
+
+            try {
+              const response = await fetch(`/tabellaInflux?idSessione=${sessionId}&idUtente=${userId}&tipoVisualizzazione=${tipoVisualizzazione}`);
+              if (!response.ok) {
+                throw new Error(`Errore HTTP ${response.status}: ${await response.text()}`);
+              }
+              window.location.href = `tabellaInflux.html?idSessione=${sessionId}&idUtente=${userId}&tipoVisualizzazione=${tipoVisualizzazione}`;
+            } catch (error) {
+              console.error("❌ Errore durante il caricamento della tabella:", error);
+              alert("Errore nel caricamento della tabella.");
+            }
+          });
+        </script>
+
+        <!-- Griglia con le card di statistiche -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+          <!-- Media -->
+          <div class="bg-white border border-gray-300 rounded-lg shadow-md p-4 flex flex-col items-center">
+            <h3 class="text-lg font-semibold text-gray-700">Media</h3>
+            <iframe src="http://localhost:3000/d-solo/eedgfcam81udcd/mean-heart?orgId=1&from=1727708400000&to=1729352400000&timezone=browser&theme=light&panelId=1&__feature.dashboardSceneSolo" width="160" height="160" frameborder="0"></iframe>
+          </div>
+          <!-- Massimo -->
+          <div class="bg-white border border-gray-300 rounded-lg shadow-md p-4 flex flex-col items-center">
+            <h3 class="text-lg font-semibold text-gray-700">Massimo</h3>
+            <iframe src="http://localhost:3000/d-solo/eedgf3y8j4dfkb/min-heart?orgId=1&from=1727708400000&to=1729352400000&timezone=browser&theme=light&panelId=1&__feature.dashboardSceneSolo" width="160" height="160" frameborder="0"></iframe>
+          </div>
+          <!-- Minimo -->
+          <div class="bg-white border border-gray-300 rounded-lg shadow-md p-4 flex flex-col items-center">
+            <h3 class="text-lg font-semibold text-gray-700">Minimo</h3>
+            <iframe src="http://localhost:3000/d-solo/eedgblj55lgjkc/minimo-heart?orgId=1&from=1727708400000&to=1729352400000&timezone=browser&theme=light&panelId=1&__feature.dashboardSceneSolo" width="160" height="160" frameborder="0"></iframe>
+          </div>
+        </div>
+
+        <!-- Grafico a linee -->
+        <div class="bg-white border border-gray-300 rounded-lg shadow-md p-6 mt-6 flex flex-col items-center">
+          <h3 class="text-lg font-semibold text-gray-700">Andamento Frequenza Cardiaca</h3>
+          <iframe src="http://localhost:3000/d-solo/eedggmgmdwpvkc/grafico-a-linee-heart?orgId=1&from=1729350000000&to=1729352400000&timezone=browser&theme=light&panelId=1&__feature.dashboardSceneSolo" width="600" height="200" frameborder="0"></iframe>
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Sezione: Accelerometro -->
+<div id="accelerometro" class="hidden mt-6">
+    <h1 class="text-center text-2xl font-bold text-gray-800">Accelerometro</h1>
+    <div class="flex flex-col md:flex-row mt-6">
+      <!-- Colonna dei Filtri -->
+      <div class="md:w-1/3 p-4 bg-gray-100 rounded-lg shadow-md">
+        <!-- Selezione dispositivi -->
+        <div class="mb-4">
+          <label for="device" class="block text-gray-700 font-semibold mb-2">Seleziona il dispositivo:</label>
+          <select id="device" multiple class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updateGrafanaPanel()">
+            <option value="74:4D:BD:2C:0D:14" selected>DISPOSITIVO 1</option>
+            <option value="74:4D:BD:2C:43:D8">DISPOSITIVO 2</option>
+            <option value="84:FC:E6:50:9E:F8">DISPOSITIVO 3</option>
+            <option value="84:FC:E6:52:4B:58">DISPOSITIVO 4</option>
+          </select>
+        </div>
+        <!-- Selezione campi -->
+        <div class="mb-4">
+          <label for="field" class="block text-gray-700 font-semibold mb-2">Seleziona l'asse</label>
+          <select id="field" multiple class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updateGrafanaPanel()">
+            <option value="accX">accellerazione asse X</option>
+            <option value="accY">accellerazione asse Y</option>
+            <option value="accZ">accellerazione asse Z</option>
+          </select>
+        </div>
+        <!-- Intervallo di aggregazione -->
+        <div class="mb-4">
+          <label for="aggregation" class="block text-gray-700 font-semibold mb-2">Intervallo di Aggregazione:</label>
+          <select id="aggregation" class="w-full p-2 border rounded-md" onchange="updateGrafanaPanel()">
+            <option value="1s">1 secondo</option>
+            <option value="5s">5 secondi</option>
+            <option value="10s">10 secondi</option>
+            <option value="30s">30 secondi</option>
+            <option value="1m">1 minuto</option>
+            <option value="5m">5 minuti</option>
+            <option value="10m">10 minuti</option>
+            <option value="30m">30 minuti</option>
+            <option value="1h">1 ora</option>
+          </select>
+        </div>
+        <button onclick="updateGrafanaPanel()" class="w-full bg-blue-900 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300">
+          Aggiorna Grafico
+        </button>
+      </div>
+      <!-- Colonna del Pannello Grafana -->
+      <div class="md:w-2/3 mt-4 md:mt-0 md:ml-4">
+        <iframe id="grafanaPanel" src="http://localhost:3000/d-solo/fedqudffvd0qoa/grafana-parametrico-totlae?orgId=1&amp;from=1727709150000&amp;to=1727709450000&amp;timezone=browser&amp;var-var_device=84:FC:E6:50:9E:F8&amp;var-var_field=accY&amp;var-var_field=accX&amp;var-var_field=accZ&amp;var-var_subject=AL&amp;var-var_aggregation=30s&amp;theme=light&amp;panelId=1&amp;__feature.dashboardSceneSolo" width="800" height="455" frameborder="0"></iframe>
+      </div>
+    </div>
+    <br>
+    <br>
+            <div class="container mx-auto p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Grafana Panel 1 -->
+            <div class="bg-white shadow-lg rounded-lg p-4 border border-gray-300 flex flex-col items-center">
+              <h2 class="text-lg font-semibold mb-2">Grafana Panel 1</h2>
+              <iframe src="http://localhost:3000/d-solo/eef3wbf1fd5hce/dashboard-giroscopio?orgId=1&from=1727709002000&to=1727709003000&timezone=browser&var-query0=&panelId=1&__feature.dashboardSceneSolo"
+                      width="450" height="250" frameborder="0" class="rounded-lg"></iframe>
+            </div>
+            <!-- Grafana Panel 2 -->
+            <div class="bg-white shadow-lg rounded-lg p-4 border border-gray-300 flex flex-col items-center">
+              <h2 class="text-lg font-semibold mb-2">Grafana Panel 2</h2>
+              <iframe src="http://localhost:3000/d-solo/eef3wbf1fd5hce/dashboard-giroscopio?orgId=1&from=1727709002000&to=1727709003000&timezone=browser&var-query0=&panelId=2&__feature.dashboardSceneSolo"
+                      width="450" height="250" frameborder="0" class="rounded-lg"></iframe>
+            </div>
+            <!-- Grafana Panel 3 -->
+            <div class="bg-white shadow-lg rounded-lg p-4 border border-gray-300 flex flex-col items-center">
+              <h2 class="text-lg font-semibold mb-2">Grafana Panel 3</h2>
+              <iframe src="http://localhost:3000/d-solo/eef3wbf1fd5hce/dashboard-giroscopio?orgId=1&from=1727709002000&to=1727709003000&timezone=browser&var-query0=&panelId=2&__feature.dashboardSceneSolo"
+                      width="450" height="250" frameborder="0" class="rounded-lg"></iframe>
+            </div>
+          </div>
+        </div>
+    <!-- (Eventuali ulteriori pannelli Grafana rimangono invariati) -->
+  </div>
+  
+  <div id="giroscopio" class="hidden mt-6">
+    <h1 class="text-center text-2xl font-bold text-gray-900">Giroscopio</h1>
+    <div class="flex flex-col md:flex-row mt-6">
+      <!-- Colonna dei Filtri -->
+      <div class="md:w-1/3 p-4 bg-gray-100 rounded-lg shadow-md">
+        <!-- Selezione dispositivi -->
+        <div class="mb-4">
+          <label for="device" class="block text-gray-700 font-semibold mb-2">Seleziona il dispositivo:</label>
+          <select id="device" multiple class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updateGrafanaPanel()">
+            <option value="74:4D:BD:2C:0D:14" selected>DISPOSITIVO 1</option>
+            <option value="74:4D:BD:2C:43:D8">DISPOSITIVO 2</option>
+            <option value="84:FC:E6:50:9E:F8">DISPOSITIVO 3</option>
+            <option value="84:FC:E6:52:4B:58">DISPOSITIVO 4</option>
+          </select>
+        </div>
+        <!-- Selezione campi -->
+        <div class="mb-4">
+          <label for="field" class="block text-gray-700 font-semibold mb-2">Seleziona l'asse</label>
+          <select id="field" multiple class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="updateGrafanaPanel()">
+            <option value="gyroX">giroscopio asse X</option>
+            <option value="gyroY">giroscopio asse Y</option>
+            <option value="gyroX">giroscopio asse Z</option>
+          </select>
+        </div>
+        <!-- Intervallo di aggregazione -->
+        <div class="mb-4">
+          <label for="aggregation" class="block text-gray-700 font-semibold mb-2">Intervallo di Aggregazione:</label>
+          <select id="aggregation" class="w-full p-2 border rounded-md" onchange="updateGrafanaPanel()">
+            <option value="1s">1 secondo</option>
+            <option value="5s">5 secondi</option>
+            <option value="10s">10 secondi</option>
+            <option value="30s">30 secondi</option>
+            <option value="1m">1 minuto</option>
+            <option value="5m">5 minuti</option>
+            <option value="10m">10 minuti</option>
+            <option value="30m">30 minuti</option>
+            <option value="1h">1 ora</option>
+          </select>
+        </div>
+        <button onclick="updateGrafanaPanel()" class="w-full bg-blue-900 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300">
+          Aggiorna Grafico
+        </button>
+      </div>
+      <!-- Colonna del Pannello Grafana -->
+      <div class="md:w-2/3 mt-4 md:mt-0 md:ml-4">
+        <iframe id="grafanaPanel" src="http://localhost:3000/d-solo/fedqudffvd0qoa/grafana-parametrico-totlae?orgId=1&amp;from=1727709150000&amp;to=1727709450000&amp;timezone=browser&amp;var-var_device=84:FC:E6:50:9E:F8&amp;var-var_field=accY&amp;var-var_field=accX&amp;var-var_field=accZ&amp;var-var_subject=AL&amp;var-var_aggregation=30s&amp;theme=light&amp;panelId=1&amp;__feature.dashboardSceneSolo" width="800" height="455" frameborder="0"></iframe>
+      </div>
+    </div>
+    <br>
+    <br>
+            <div class="container mx-auto p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Grafana Panel 1 -->
+            <div class="bg-white shadow-lg rounded-lg p-4 border border-gray-300 flex flex-col items-center">
+              <h2 class="text-lg font-semibold mb-2">Andamento dei valori di giroscopio nei tre assi</h2>
+              <iframe src="http://localhost:3000/d-solo/fedqsy49tyuiod/giroscopiototale?orgId=1&from=1727709002000&to=1727709003000&timezone=browser&theme=light&panelId=1&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+            </div>
+            <!-- Grafana Panel 2 -->
+            <div class="bg-white shadow-lg rounded-lg p-4 border border-gray-300 flex flex-col items-center">
+              <h2 class="text-lg font-semibold mb-2">Valore medio delle misurazioni per asse</h2>
+              <iframe src="http://localhost:3000/d-solo/aedqsc7ue8kjkb/giroscopio-media?orgId=1&from=1727709001000&to=1727709005000&timezone=browser&theme=light&panelId=1&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe> 
+            </div>
+            <!-- Grafana Panel 3 -->
+            <div class="bg-white shadow-lg rounded-lg p-4 border border-gray-300 flex flex-col items-center">
+              <h2 class="text-lg font-semibold mb-2">Valore minimo delle misurazioni per asse</h2>
+              <iframe src="http://localhost:3000/d-solo/fedqrrlw00000e/giroscopio-minimo?orgId=1&from=1727709001000&to=1727709005000&timezone=browser&theme=light&panelId=1&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+            </div>
+
+            <div class="bg-white shadow-lg rounded-lg p-4 border border-gray-300 flex flex-col items-center">
+                <h2 class="text-lg font-semibold mb-2">Valore massimo delle misurazioni per asse</h2>
+                <iframe src="http://localhost:3000/d-solo/cedqrzo7j5g5ce/giorscopio-max?orgId=1&from=1727709001000&to=1727709005000&timezone=browser&theme=light&panelId=1&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+            </div>
+
+          </div>
+        </div>
+    <!-- (Eventuali ulteriori pannelli Grafana rimangono invariati) -->
+  </div>
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
   </div>
 
   <script>
-    document.getElementById('fetchDataBtn').addEventListener('click', async () => {
-      console.log('Pulsante cliccato, inizio il fetch dei dati...');
-      const userId = 'alfonso'; 
+    // Funzione per il cambio di visualizzazione
+    function toggleView(view) {
+  // Nascondi tutte le sezioni dei sensori
+  document.getElementById('battitoCardiaco').classList.add('hidden');
+  document.getElementById('accelerometro').classList.add('hidden');
+  document.getElementById('giroscopio').classList.add('hidden');
+
+  // Mostra la sezione selezionata
+  if (view === 'battito') {
+    document.getElementById('battitoCardiaco').classList.remove('hidden');
+  } else if (view === 'accelerometro') {
+    document.getElementById('accelerometro').classList.remove('hidden');
+  } else if (view === 'giroscopio') {
+    document.getElementById('giroscopio').classList.remove('hidden');
+  }
+}
+
+
+    let currentSortColumn = null;
+    let currentSortOrder = "asc";
+    let misurazioni = [];
+
+    // Carica i dati al caricamento della pagina
+    window.onload = async function() {
       try {
-        const response = await fetch(`/api/misurazioni`);
-        console.log('Risposta fetch ricevuta:', response);
-  
+        const params = new URLSearchParams(window.location.search);
+        const idUtente = params.get("idUtente");
+        if (!idUtente) {
+          throw new Error("ID utente non trovato nell'URL.");
+        }
+        const response = await fetch(`/api/misurazioni/${idUtente}`);
         if (!response.ok) {
-          console.error('Errore risposta non OK:', response.status, response.statusText);
-          if (response.status === 404) {
-            console.error('Endpoint /api/misurazioni non trovato.');
-          } else if (response.status >= 500) {
-            console.error('Errore del server. Verifica il backend.');
-          }
           throw new Error(`Errore HTTP ${response.status}: ${response.statusText}`);
         }
-  
         const data = await response.json();
-        console.log('Dati ricevuti dal server:', data);
-  
-        if (!Array.isArray(data)) {
-          console.error('Formato dati non valido. Atteso un array, ricevuto:', typeof data);
-          throw new Error('Formato dati non valido.');
+        if (!Array.isArray(data) || data.length === 0) {
+          document.getElementById('error-message').textContent = "❌ Nessun dato disponibile.";
+          return;
         }
-  
-        const tableHead = document.querySelector('#data-table thead tr');
-        const tableBody = document.querySelector('#data-table tbody');
-        const ctx = document.getElementById('dataChart').getContext('2d');
-  
-        tableHead.innerHTML = '';
-        tableBody.innerHTML = '';
-  
-        const labels = [];
-        const values = [];
-  
-        if (data.length > 0) {
-          console.log('Generazione intestazioni della tabella...');
-          Object.keys(data[0]).forEach(key => {
-            const th = document.createElement('th');
-            th.textContent = key;
-            tableHead.appendChild(th);
-          });
-        } else {
-          console.warn('Nessun dato trovato per la tabella.');
-        }
-  
-        data.forEach((item, index) => {
-          console.log(`Elaborazione riga ${index + 1}:`, item);
-  
-          const row = document.createElement('tr');
-          Object.values(item).forEach(value => {
-            const td = document.createElement('td');
-            td.textContent = value;
-            row.appendChild(td);
-          });
-          tableBody.appendChild(row);
-  
-          if (item._time && item._value) {
-            labels.push(item._time);
-            values.push(item._value);
-          } else {
-            console.warn('Elemento senza _time o _value:', item);
-          }
-        });
-  
-        console.log('Dati per il grafico:', { labels, values });
-  
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: 'Valore nel Tempo',
-              data: values,
-              borderColor: 'blue',
-              backgroundColor: 'rgba(0, 0, 255, 0.1)',
-              fill: true
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                display: true,
-                position: 'top'
-              }
-            },
-            scales: {
-              x: {
-                title: {
-                  display: true,
-                  text: 'Tempo'
-                }
-              },
-              y: {
-                title: {
-                  display: true,
-                  text: 'Valore'
-                }
-              }
-            }
-          }
-        });
-  
-        console.log('Grafico creato con successo.');
-  
+        misurazioni = data;
+        popolaTabella(misurazioni, Object.keys(misurazioni[0] || {}));
       } catch (error) {
-        console.error('Errore durante l\'esecuzione:', error);
-  
-        // Notifica visibile all'utente
-        alert(`Si è verificato un errore durante il caricamento dei dati: ${error.message}`);
+        console.error('❌ Errore durante il recupero dei dati:', error);
+        document.getElementById('error-message').textContent = `❌ Errore: ${error.message}`;
       }
+    };
+
+    // Popola la tabella con i dati
+    function popolaTabella(dati, campiSelezionati) {
+      const table = document.getElementById("data-table");
+      const thead = table.querySelector("thead tr");
+      const tbody = table.querySelector("tbody");
+      thead.innerHTML = "";
+      tbody.innerHTML = "";
+      campiSelezionati.forEach(campo => {
+        const th = document.createElement("th");
+        th.textContent = campo;
+        thead.appendChild(th);
+      });
+      dati.forEach(item => {
+        const row = document.createElement("tr");
+        campiSelezionati.forEach(campo => {
+          const td = document.createElement("td");
+          td.textContent = item[campo] || "—";
+          row.appendChild(td);
+        });
+        tbody.appendChild(row);
+      });
+    }
+
+    // Eliminazione di una misurazione
+    async function eliminaMisurazione(id) {
+      try {
+        const response = await fetch(`/api/misurazioni/${id}`, { method: 'DELETE' });
+        if (!response.ok) {
+          throw new Error(`Errore: ${response.statusText}`);
+        }
+        alert(`✅ Misurazione eliminata con successo! (ID: ${id})`);
+        misurazioni = misurazioni.filter(item => (item._id?.$oid || item._id) !== id);
+        popolaTabella(misurazioni, Object.keys(misurazioni[0] || {}));
+      } catch (error) {
+        console.error("❌ Errore durante l'eliminazione:", error);
+        alert(`⚠️ Errore durante l'eliminazione della misurazione. (ID: ${id})`);
+      }
+    }
+
+    // Ordinamento della tabella
+    document.querySelectorAll(".sortable").forEach(header => {
+      header.addEventListener("click", function() {
+        const column = this.dataset.column;
+        if (currentSortColumn === column) {
+          currentSortOrder = currentSortOrder === "asc" ? "desc" : "asc";
+        } else {
+          currentSortOrder = "asc";
+          currentSortColumn = column;
+        }
+        ordinaTabella(column);
+      });
     });
-  
-  
+
+    function ordinaTabella(column) {
+      misurazioni.sort((a, b) => {
+        let valueA = a[column];
+        let valueB = b[column];
+        if (column === "_time") {
+          valueA = new Date(valueA).getTime();
+          valueB = new Date(valueB).getTime();
+        } else if (!isNaN(valueA) && !isNaN(valueB)) {
+          valueA = Number(valueA);
+          valueB = Number(valueB);
+        }
+        return currentSortOrder === "asc" ? (valueA > valueB ? 1 : -1) : (valueA < valueB ? 1 : -1);
+      });
+      popolaTabella(misurazioni, Object.keys(misurazioni[0] || {}));
+    }
+
+    // Funzione per aggiornare il pannello Grafana
+    async function updateGrafanaPanel() {
+      const params = new URLSearchParams(window.location.search);
+      const idUtente = params.get("idUtente");
+      if (!idUtente) {
+        console.error("❌ [DEBUG] ID utente non trovato nell'URL!");
+        return;
+      }
+      try {
+        const response = await fetch(`/api/utente/${idUtente}`);
+        if (!response.ok) {
+          throw new Error(`Errore HTTP ${response.status}: ${await response.text()}`);
+        }
+        const userData = await response.json();
+        const subject = userData.username;
+        console.log(`✅ [DEBUG] Soggetto recuperato: ${subject}`);
+
+        // Impostiamo l'esercizio a "AL" (valore fisso) poiché è stato rimosso il filtro di selezione
+        let exercise = "AL";
+        let devices = Array.from(document.getElementById("device").selectedOptions)
+                           .map(option => option.value)
+                           .join(",");
+        let fields = Array.from(document.getElementById("field").selectedOptions)
+                          .map(option => option.value)
+                          .join(",");
+        let aggregation = document.getElementById("aggregation").value;
+        if (!aggregation || aggregation.trim() === "") {
+          console.warn("⚠️ [DEBUG] Aggregazione vuota, impostiamo '1s' di default.");
+          aggregation = "1s";
+        }
+        let grafanaUrl = `http://localhost:3000/d-solo/fedqudffvd0qoa/grafana-parametrico-totlae?orgId=1&from=1727708400000&to=1727709600000&timezone=browser&var-var_exercise=${encodeURIComponent(exercise)}&var-var_device=${encodeURIComponent(devices)}&var-var_field=${encodeURIComponent(fields)}&var-var_subject=${encodeURIComponent(subject)}&var-var_aggregation=${encodeURIComponent(aggregation)}&theme=light&panelId=1&__feature.dashboardSceneSolo`;
+        console.log(`🔗 [DEBUG] URL Grafana aggiornato: ${grafanaUrl}`);
+        document.getElementById("grafanaPanel").src = grafanaUrl;
+      } catch (error) {
+        console.error("❌ [DEBUG] Errore nel recupero del soggetto:", error);
+        alert("Errore nel recupero delle informazioni utente.");
+      }
+    }
   </script>
-  
+
+  <script src="filtriTabellaValori.js"></script>
+  <script src="fetchUserInfo.js"></script>
+  <script src="fetchPatientList.js"></script>
+  <script src="fetchCalendar.js"></script>
+  <script src="authHandler.js"></script>
 </body>
 </html>

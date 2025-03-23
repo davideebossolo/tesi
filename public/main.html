@@ -1,0 +1,512 @@
+  <!DOCTYPE html>
+  <html lang="it">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fisio</title>
+
+
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Aggiungi questi CDN nel file HTML -->
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://unpkg.com/popper.js@1"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.js"></script>
+
+    <style>
+      body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #2c3e50;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: scroll;
+    background: radial-gradient(circle, #ffffff, #ffffff);
+  }
+  
+  .container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+  
+      .sidebar {
+    width: 7%;
+    min-width: 250px;
+    background-color: #ffffff;
+    border-right: 2px solid #2c3e50;
+    padding: 10px;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: all 0.3s ease-in-out;
+    align-items: center;
+  }
+  
+  .sidebar.collapsed {
+    width: 10px;
+    overflow: hidden;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+  }
+  .sidebar.collapsed h2,
+  .sidebar.collapsed p,
+  .sidebar.collapsed .user-list,
+  .sidebar.collapsed .sidebar-menu {
+    display: none;
+  }
+  
+  .sidebar.collapsed #user-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  s
+  
+      .toggle-btn {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: #3498db;
+        color: #ffffff;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out;
+      }
+  
+      .toggle-btn:hover {
+        background-color: #2c3e50;
+      }
+  
+  .sidebar h2 {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin-bottom: 10px;
+  }
+  
+  .sidebar .user-info,
+  .sidebar .user-list {
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sidebar .user-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar .user-list li {
+    margin-bottom: 10px;
+  }
+  
+  .sidebar .user-list a {
+    text-decoration: none;
+    color: #3498db;
+    padding: 8px 12px;
+    border: 1px solid #3498db;
+    border-radius: 5px;
+    display: block;
+    transition: color 0.3s, border-color 0.3s, background-color 0.3s;
+  }
+  
+  .sidebar .user-list a:hover {
+    color: #ffffff;
+    border-color: #3498db;
+    background-color: #3498db;
+  }
+  
+  .sidebar-menu ul li {
+    margin: 10px 0;
+  }
+  
+  .sidebar-menu a {
+    display: block;
+    text-decoration: none;
+    color: #3498db;
+    padding: 8px 12px;
+    border: 1px solid #3498db;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .sidebar-menu a:hover {
+    background-color: #3498db;
+    color: #ffffff;
+  }
+  
+  .main-content {
+    flex-grow: 1;
+    display: flex;
+    padding: 20px;
+    min-height: 500px;
+    justify-content: center;
+    align-items: center;
+}
+
+#calendar-container {
+    width: 95%;
+    max-width: 1400px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#calendar {
+    flex-grow: 1; /* Occupa tutto lo spazio disponibile */
+    overflow-y: auto; /* Scroll verticale se necessario */
+    min-height: 400px; /* Altezza minima */
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+/* Responsività */
+@media (max-width: 1024px) {
+    #calendar {
+        height: 75vh;
+    }
+}
+
+@media (max-width: 768px) {
+    #calendar {
+        height: 70vh;
+    }
+}
+
+@media (max-width: 480px) {
+    #calendar {
+        height: 60vh;
+    }
+}
+
+  
+  #popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    max-width: 500px;
+    text-align: left;
+    font-family: 'Roboto', sans-serif;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  #popup h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin: 0;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+  }
+  
+  #popup ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+  }
+  
+  #popup ul li {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    color: #555;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  #popup ul li span {
+    flex-grow: 1;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  #popup .start-session-btn {
+    padding: 8px 16px;
+    border: 2px solid #007bff;
+    background: transparent;
+    color: #007bff;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  #popup .start-session-btn:hover {
+    background: #007bff;
+    color: #fff;
+  }
+  
+  #close-popup {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    color: #333;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  #close-popup:hover {
+    color: #ff0000;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -60%);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+  
+  .user-info img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #2c3e50;
+    margin-bottom: 10px;
+  }
+  
+  #patient-list-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    max-width: 600px;
+    margin: auto; /* Centra orizzontalmente */
+    text-align: left;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centra verticalmente e orizzontalmente */
+    max-height: 80vh; /* Limita l'altezza massima al 80% della viewport */
+    overflow: auto; /* Permette lo scrolling interno se la lista è troppo lunga */
+}
+
+
+#patient-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 70vh; /* Evita che la lista si espanda troppo */
+    overflow-y: auto; /* Abilita lo scrolling verticale se necessario */
+}
+
+#patient-search {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+}
+
+/* Mantieni ogni riga ben visibile */
+#patient-list li {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-bottom: 1px solid #ddd;
+    transition: background 0.3s ease-in-out;
+    min-height: 50px; /* Imposta un'altezza minima per evitare il taglio */
+}
+
+#patient-list li:hover {
+    background: #f1f1f1;
+}
+
+/* Immagini dei pazienti più piccole per evitare il taglio */
+#patient-list img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+}
+
+#patient-list a {
+    font-size: 1rem;
+    color: #007bff;
+    text-decoration: none;
+}
+
+#patient-list a:hover {
+    text-decoration: underline;
+}
+
+#patient-list-container.hidden {
+    display: none !important;
+}
+#physio-menu {
+    display: flex;
+    justify-content: center; /* Allinea i rettangoli al centro */
+    gap: 20px; /* Spazio tra i rettangoli */
+}
+
+.menu-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 300px;  /* Larghezza fissa */
+    height: 120px; /* Altezza ridotta per effetto rettangolare */
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    border-radius: 12px; /* Angoli arrotondati */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.menu-box:hover {
+    transform: scale(1.05); /* Effetto zoom al passaggio del mouse */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+
+
+    </style>
+
+  </head>
+  <body>
+
+    <div class="container">
+      <div class="flex flex-col w-64 h-screen bg-gray-900 text-gray-400 fixed top-0 left-0">
+        <!-- Logo -->
+        <a class="flex items-center w-full px-4 mt-5 text-lg font-bold text-white">
+            <svg class="w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"></path>
+            </svg>
+            <span class="ml-2">The App</span>
+        </a>
+    
+        <!-- User Info -->
+        <div class="flex flex-col items-center p-4 border-b border-gray-700">
+            <img id="user-image" class="w-20 h-20 rounded-full border-2 border-gray-700" src="user-placeholder.jpg" alt="User Image">
+            <h2 id="user-name" class="text-xl font-semibold mt-2">Nome Utente</h2>
+            <p id="user-role" class="text-md text-gray-400">Ruolo: Caricamento...</p>
+    
+            <!-- Logout Button -->
+            <form id="logout-form" action="/api/autenticazione/logout" method="POST" class="w-full">
+                <button type="submit" class="w-full flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-semibold py-2 mt-3 rounded-md">
+                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                </button>
+            </form>
+        </div>
+    
+        <!-- Sidebar Navigation -->
+        <nav class="flex flex-col flex-grow mt-4 space-y-2">
+            <a href="/main" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+                <i class="fas fa-home mr-3"></i> HOME
+            </a>
+            <a href="/visualizzaDati" id="menu-visualizza-dati" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+                <i class="fas fa-chart-bar mr-3"></i> Visualizza dati
+            </a>
+            <a href="/crea-esercizio" id="menu-create-exercise" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+                <i class="fas fa-dumbbell mr-3"></i> Crea esercizio
+            </a>
+            <a href="/calendario" id="menu-calendar" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+                <i class="fas fa-calendar-alt mr-3"></i> Calendario
+            </a>
+            <a href="/pazienti" id="menu-patient-list" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+                <i class="fas fa-user-injured mr-3"></i> Lista Pazienti
+            </a>
+        </nav>
+    </div>
+  
+      
+          <!-- Calendario (Viene nascosto per fisioterapisti) -->
+          <div id="calendar-container" class="ml-64 flex flex-col items-center justify-center w-full mt-5">
+              <div id="calendar"></div>
+              <div id="popup">
+                <button id="close-popup">&times;</button>
+                <h2>Allenamenti di oggi</h2>
+                <ul id="popup-list"></ul>
+              </div>
+            </div>
+            <div id="physio-menu" class="hidden flex justify-center items-center flex-col gap-8 w-full mt-10">
+              <div class="flex flex-col items-center">
+                  <a href="/crea-esercizio" class="menu-box bg-gray-800 hover:bg-gray-700 transition-all duration-300 flex flex-col items-center justify-center text-white rounded-lg shadow-lg w-72 h-40">
+                      <i class="fas fa-dumbbell text-4xl mb-2"></i>
+                      <span class="text-lg font-semibold">Crea Esercizio</span>
+                  </a>
+                  <p class="text-gray-600 text-sm mt-2 text-center w-72 bg-white rounded-lg shadow-md shadow-gray-400 p-2">Crea e personalizza esercizi per i pazienti, adattandoli alle loro esigenze specifiche.</p>
+              </div>
+          
+              <div class="flex flex-col items-center">
+                  <a href="/calendario" class="menu-box bg-gray-800 hover:bg-gray-700 transition-all duration-300 flex flex-col items-center justify-center text-white rounded-lg shadow-lg w-72 h-40">
+                      <i class="fas fa-calendar-alt text-4xl mb-2"></i>
+                      <span class="text-lg font-semibold">Calendario allenamenti</span>
+                  </a>
+                  <p class="text-gray-600 text-sm mt-2 text-center w-72 bg-white rounded-lg shadow-md shadow-gray-400 p-2">Consulta il calendario degli allenamenti, pianifica e avvia le sessioni di fisioterapia.</p>
+              </div>
+          
+              <div class="flex flex-col items-center">
+                  <a href="/pazienti" class="menu-box bg-gray-800 hover:bg-gray-700 transition-all duration-300 flex flex-col items-center justify-center text-white rounded-lg shadow-lg w-72 h-40">
+                      <i class="fas fa-user-injured text-4xl mb-2"></i>
+                      <span class="text-lg font-semibold">Lista Pazienti</span>
+                  </a>
+                  <p class="text-gray-600 text-sm mt-2 text-center w-72 bg-white rounded-lg shadow-md shadow-gray-400 p-2">Gestisci i tuoi pazienti, visualizza il loro stato di avanzamento </p>
+              </div>
+          </div>
+          
+          
+          
+
+
+
+          
+          
+        
+      </div>
+  
+  
+
+
+
+
+    <script src="fetchUserInfo.js"></script>
+    <script src="fetchPatientList.js"></script>
+    <script src="fetchCalendar.js"></script>
+    <script src="authHandler.js"></script>
+
+  </body>
+  </html>
+

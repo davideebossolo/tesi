@@ -3,12 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>Crea Sessione di Allenamento</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    body {
+   body {
       font-family: Arial, sans-serif;
       background-color: #f5f5f5;
       margin: 0;
       padding: 20px;
+      display: flex; 
     }
     .container {
       max-width: 600px;
@@ -35,130 +38,358 @@
       border: 1px solid #ccc;
     }
     button {
-      background-color: #4caf50;
+      background-color: #2c3e50;
       color: #fff;
       border: none;
       cursor: pointer;
       margin-top: 20px;
     }
     button:hover {
-      background-color: #45a049;
+      background-color: #2c3e50;
     }
-    .multi-select {
-      height: 150px;
-    }
+    .checkbox-group {
+  display: flex;
+  flex-direction: column;
+  max-height: 300px;
+  overflow-y: auto;
+  gap: 10px;
+}
+
+.exercise-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #f9f9f9;
+}
+
+.exercise-item img {
+  width: 50px;
+  height: 50px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.exercise-item label {
+  flex-grow: 1;
+}
+
+.exercise-item input[type="number"] {
+  width: 60px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: center;
+}
+
+
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Crea Sessione di Allenamento</h1>
-  <form id="sessionForm">
-    <label for="utente">Seleziona Utente:</label>
-    <select id="utente" name="utente" required>
-      <option value="">Caricamento utenti...</option>
-    </select>
+  <div class="flex flex-col w-64 h-screen overflow-hidden text-gray-400 bg-gray-900 rounded">
+    <!-- Logo -->
+    <a class="flex items-center w-full px-3 mt-3" href="#" style="font-size: larger;">
+        <svg class="w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"></path>
+        </svg>
+        <span class="ml-2 font-bold">The App</span>
+    </a>
 
-    <label for="dataInizio">Data Inizio:</label>
-    <input type="datetime-local" id="dataInizio" name="dataInizio" required>
+    <!-- User Info -->
+    <div class="flex flex-col items-center p-4 border-b border-gray-700 bg-gray-900 text-white">
+      <img id="user-image" class="w-20 h-20 rounded-full border-2 border-gray-600" src="user-placeholder.jpg" alt="User Image">
+      <h2 id="user-name" class="text-xl font-semibold mt-2 text-white">Nome Utente</h2>
+      <p id="user-role" class="text-lg text-gray-400">Ruolo: Caricamento...</p>
+  </div>
+  
 
-    <label for="esercizi">Seleziona Esercizi:</label>
-    <select id="esercizi" name="esercizi" multiple class="multi-select" required>
-      <!-- Gli esercizi saranno caricati qui -->
-    </select>
-
-    <button type="submit">Crea Sessione</button>
-  </form>
+    <!-- Sidebar Navigation -->
+    <nav class="flex flex-col w-full px-2 flex-grow">
+        <a href="/main" class="sidebar-link" style="font-size: larger;">HOME</a>
+        <a href="/visualizzaDati" id="menu-visualizza-dati" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+        <a href="/logout" id="auth-link" class="sidebar-link" style="font-size: larger;">Logout</a>
+        <a href="/crea-esercizio" id="menu-create-exercise" class="sidebar-link" style="font-size: larger;">Crea esercizio</a>
+        <a href="/calendario" id="menu-calendar" class="sidebar-link" style="font-size: larger;">Calendario</a>
+    </nav>
 </div>
+  <div class="container">
+    <h1>Crea Sessione di Allenamento</h1>
+    <form id="sessionForm">
+      <select id="utente" name="utente" required>
+        <option value="">Caricamento utenti...</option>
+      </select>
+
+      <label for="dataInizio">Data Inizio:</label>
+      <input type="datetime-local" id="dataInizio" name="dataInizio" required>
+
+      <label for="searchEsercizio" class="block font-medium text-gray-700">Cerca Esercizio:</label>
+      <div class="flex w-full">
+          <input type="text" id="searchEsercizio" placeholder="Digita il nome dell'esercizio..." 
+                 class="flex-2 px-4 py-2 border border-gray-300 rounded-l-md focus:ring focus:ring-blue-200 focus:border-blue-500">
+          <button type="button" 
+                  class="flex-1 px-4 py-2 bg-gray-700 text-white rounded-r-md hover:bg-gray-800 flex items-center justify-center"
+                  onclick="filterExercises()">🔍</button>
+      </div>
+      
+      
+      
+      
+      
+
+      <label for="esercizi">Seleziona Esercizi:</label>
+      <div id="esercizi" class="checkbox-group">
+        <!-- Gli esercizi saranno caricati qui -->
+      </div>
+
+      <button type="submit">Crea Sessione</button>
+    </form>
+  </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-  // Funzione per generare un ID univoco
-  function generaIdUnico() {
-    return `sess-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+  document.addEventListener('DOMContentLoaded', async function () {
+    setPreselectedDate();
+    
+    const fisioterapistaId = await getUserId();
+    if (!fisioterapistaId) {
+      console.error("❌ Errore: ID fisioterapista non trovato!");
+      return;
+    }
+
+    console.log(`✅ ID Fisioterapista: ${fisioterapistaId}`);
+
+    await loadUsers(fisioterapistaId);
+    await loadExercises();
+
+    document.getElementById('sessionForm').addEventListener('submit', handleFormSubmit);
+  });
+
+  /**
+   * Imposta la data predefinita se presente nei parametri URL
+   */
+  function setPreselectedDate() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedDate = urlParams.get('data');
+    if (selectedDate) {
+      document.getElementById('dataInizio').value = `${selectedDate}T00:00`;
+    }
+  }
+ 
+  async function filterExercises() {
+    const searchValue = document.getElementById('searchEsercizio').value.toLowerCase().trim();
+    
+    try {
+        const response = await fetch('/api/esercizi');
+        const esercizi = await response.json();
+
+        const eserciziContainer = document.getElementById('esercizi');
+        eserciziContainer.innerHTML = ''; // Svuota la lista
+
+        const eserciziFiltrati = esercizi.filter(esercizio =>
+            esercizio.nomeEsercizio.toLowerCase().includes(searchValue)
+        );
+
+        if (eserciziFiltrati.length === 0) {
+            eserciziContainer.innerHTML = '<p>Nessun esercizio trovato.</p>';
+            return;
+        }
+
+        eserciziFiltrati.forEach(esercizio => {
+            const exerciseDiv = document.createElement('div');
+            exerciseDiv.classList.add('exercise-item');
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = esercizio._id;
+            checkbox.id = `esercizio-${esercizio._id}`;
+
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = esercizio.nomeEsercizio;
+
+            const repetitionsInput = document.createElement('input');
+            repetitionsInput.type = 'number';
+            repetitionsInput.min = '1';
+            repetitionsInput.value = '1';
+            repetitionsInput.placeholder = 'Ripetizioni';
+
+            exerciseDiv.appendChild(checkbox);
+            exerciseDiv.appendChild(label);
+            exerciseDiv.appendChild(repetitionsInput);
+
+            eserciziContainer.appendChild(exerciseDiv);
+        });
+
+    } catch (error) {
+        console.error('Errore nel filtraggio degli esercizi:', error);
+        alert('Impossibile filtrare gli esercizi.');
+    }
+}
+
+
+
+async function loadExercises() {
+    try {
+        const response = await fetch('/api/esercizi');
+        const esercizi = await response.json();
+
+        const eserciziContainer = document.getElementById('esercizi');
+        eserciziContainer.innerHTML = ''; // Puliamo il contenitore prima di riempirlo
+
+        esercizi.forEach(esercizio => {
+            const exerciseDiv = document.createElement('div');
+            exerciseDiv.classList.add('exercise-item');
+            exerciseDiv.setAttribute('data-nome', esercizio.nomeEsercizio.toLowerCase()); // Assicura minuscolo
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = esercizio._id;
+            checkbox.id = `esercizio-${esercizio._id}`;
+
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = esercizio.nomeEsercizio;
+
+            const repetitionsInput = document.createElement('input');
+            repetitionsInput.type = 'number';
+            repetitionsInput.min = '1';
+            repetitionsInput.value = '1';
+            repetitionsInput.placeholder = 'Ripetizioni';
+
+            exerciseDiv.appendChild(checkbox);
+            exerciseDiv.appendChild(label);
+            exerciseDiv.appendChild(repetitionsInput);
+
+            eserciziContainer.appendChild(exerciseDiv);
+        });
+    } catch (error) {
+        console.error('Errore nel caricamento degli esercizi:', error);
+        alert('Impossibile caricare gli esercizi.');
+    }
+}
+
+  /**
+   * Recupera l'ID del fisioterapista loggato
+   */
+  async function getUserId() {
+    try {
+      const response = await fetch("/api/utente");
+      if (!response.ok) throw new Error("Errore nel recupero dell'utente");
+      const userData = await response.json();
+      return userData.id;
+    } catch (error) {
+      console.error("Errore nel recupero dell'ID utente:", error);
+      return null;
+    }
   }
 
-  // Carica gli utenti dal backend
-  fetch('/api/users')
-    .then(response => response.json())
-    .then(users => {
+  /**
+   * Carica gli utenti associati al fisioterapista
+   */
+  async function loadUsers(fisioterapistaId) {
+    try {
+      const response = await fetch(`api/listaPazienti/${fisioterapistaId}`);
+      const users = await response.json();
+
       const userSelect = document.getElementById('utente');
       userSelect.innerHTML = '<option value="">-- Seleziona un utente --</option>';
+
       users.forEach(user => {
         const option = document.createElement('option');
-        option.value = user._id; // Assumendo che l'ID dell'utente sia in _id
+        option.value = user._id;
         option.textContent = user.username;
-        option.dataset.id = user._id;
-        option.dataset.username = user.username;
-        option.dataset.password = user.password; // Assicurati che sia gestito in modo sicuro
         userSelect.appendChild(option);
       });
-    })
-    .catch(error => {
+    } catch (error) {
       console.error('Errore nel caricamento degli utenti:', error);
       alert('Impossibile caricare gli utenti.');
-    });
+    }
+  }
 
-  // Carica gli esercizi dal backend
-  fetch('/api/esercizi')
-    .then(response => response.json())
-    .then(esercizi => {
-      const eserciziSelect = document.getElementById('esercizi');
-      esercizi.forEach(esercizio => {
-        const option = document.createElement('option');
-        option.value = esercizio._id; // Assumendo che l'ID dell'esercizio sia in _id
-        option.textContent = esercizio.nomeEsercizio;
-        option.dataset.id = esercizio._id;
-        option.dataset.nomeEsercizio = esercizio.nomeEsercizio;
-        eserciziSelect.appendChild(option);
-      });
-    })
-    .catch(error => {
-      console.error('Errore nel caricamento degli esercizi:', error);
-      alert('Impossibile caricare gli esercizi.');
-    });
+  /**
+   * Carica l'elenco degli esercizi disponibili
+   */
+   async function loadExercises() {
+    try {
+        const response = await fetch('/api/esercizi');
+        const esercizi = await response.json();
 
-  // Gestione del submit del form
-  document.getElementById('sessionForm').addEventListener('submit', function(event) {
+        const eserciziContainer = document.getElementById('esercizi');
+        eserciziContainer.innerHTML = ''; // Svuotiamo il contenitore prima di riempirlo
+
+        esercizi.forEach(esercizio => {
+            const exerciseDiv = document.createElement('div');
+            exerciseDiv.classList.add('exercise-item');
+
+            // Creiamo la checkbox per selezionare l'esercizio
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = esercizio._id;
+            checkbox.id = `esercizio-${esercizio._id}`;
+
+            // Creiamo l'elemento immagine con il percorso corretto
+            const img = document.createElement('img');
+            img.src = `/images/esercizi/${esercizio.nomeImmagine}`; // Percorso dell'immagine
+            img.alt = esercizio.nomeEsercizio;
+            img.onerror = function() {
+                this.src = 'https://via.placeholder.com/50'; // Se l'immagine non esiste, usa un placeholder
+            };
+
+            // Creiamo l'etichetta per il nome dell'esercizio
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = esercizio.nomeEsercizio;
+
+            // Creiamo un campo per il numero di ripetizioni
+            const repetitionsInput = document.createElement('input');
+            repetitionsInput.type = 'number';
+            repetitionsInput.min = '1';
+            repetitionsInput.value = '1'; // Valore di default
+            repetitionsInput.placeholder = 'Ripetizioni';
+
+            // Aggiungiamo gli elementi al div
+            exerciseDiv.appendChild(checkbox);
+            exerciseDiv.appendChild(img);
+            exerciseDiv.appendChild(label);
+            exerciseDiv.appendChild(repetitionsInput);
+
+            // Aggiungiamo il div al contenitore principale
+            eserciziContainer.appendChild(exerciseDiv);
+        });
+    } catch (error) {
+        console.error('Errore nel caricamento degli esercizi:', error);
+        alert('Impossibile caricare gli esercizi.');
+    }
+}
+  async function handleFormSubmit(event) {
     event.preventDefault();
 
     const userSelect = document.getElementById('utente');
-    const selectedUserOption = userSelect.options[userSelect.selectedIndex];
-    const userId = selectedUserOption.dataset.id;
-    const username = selectedUserOption.dataset.username;
-    const password = selectedUserOption.dataset.password;
+    const userId = userSelect.value;
+    if (!userId) {
+      alert('Seleziona un utente.');
+      return;
+    }
 
     const dataInizio = document.getElementById('dataInizio').value;
-
-    const eserciziSelect = document.getElementById('esercizi');
-    const selectedEserciziOptions = Array.from(eserciziSelect.selectedOptions);
-
-    if (selectedEserciziOptions.length === 0) {
+    
+    const eserciziCheckboxes = document.querySelectorAll('#esercizi input[type="checkbox"]:checked');
+    if (eserciziCheckboxes.length === 0) {
       alert('Seleziona almeno un esercizio.');
       return;
     }
 
-    // Costruisci l'array di esercizi da inserire in programmaEsercizi
-    const programmaEsercizi = selectedEserciziOptions.map(option => {
-      return {
-        id: option.dataset.id,
-        nomeEsercizio: option.dataset.nomeEsercizio,
-        dataInizio: dataInizio, // Usa la data di inizio della sessione
-        dataFine: null // Lascia vuoto o gestisci come preferisci
-      };
-    });
+    const programmaEsercizi = Array.from(eserciziCheckboxes).map(checkbox => ({
+      id: checkbox.value,
+      nomeEsercizio: checkbox.nextSibling.textContent,
+      dataInizio: dataInizio,
+      dataFine: null
+    }));
 
-    // Genera un ID univoco per la sessione
-    const sessionId = generaIdUnico();
-
-    // Costruisci l'oggetto sessione
     const sessione = {
-      id: sessionId, // Includi l'ID generato
-      utente: {
-        id: userId,
-        username: username,
-        password: password // Assicurati di gestire le password in modo sicuro
-      },
+      utenteId: userId,
       dataInizio: dataInizio,
       dataFine: null,
       checkConnection: false,
@@ -167,37 +398,21 @@
       esercizioCorrente: null
     };
 
-    // Invia la richiesta POST al backend
-    fetch('/api/sessioni', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(sessione)
-    })
-    .then(response => response.json())
-    .then(data => {
-      alert('Sessione creata con successo! ID: ' + data.id);
-      // Reset del form
+    try {
+      const response = await fetch('/api/sessioni', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sessione)
+      });
+
+      const data = await response.json();
+      alert('Sessione di allenamento creata');
       document.getElementById('sessionForm').reset();
-    })
-    .catch(error => {
+    } catch (error) {
       console.error('Errore durante la creazione della sessione:', error);
       alert('Errore durante la creazione della sessione.');
-    });
-  });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const selectedDate = urlParams.get('data'); // Recupera la data selezionata dal query string
-
-  if (selectedDate) {
-    document.getElementById('dataInizio').value = `${selectedDate}T00:00`; // Preimposta la data
+    }
   }
-
-  // Resto del codice...
-});
-
 </script>
-
 </body>
 </html>

@@ -12,74 +12,98 @@
       align-items: center;
       height: 100vh;
       margin: 0;
-      background-color: #ffffff; 
-      color: #070707;
+      background-color: #f9f9f9;
+      color: #333;
     }
 
-    .login-container {
-      background: rgba(20, 20, 20, 0.9);
-      border: 2px solid #00ff99;
+    .form-container {
+      background: #ffffff;
+      border: 1px solid #ddd;
       border-radius: 8px;
       padding: 30px;
       width: 100%;
       max-width: 400px;
-      box-shadow: 0 0 15px rgba(0, 255, 153, 0.6);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       text-align: center;
     }
 
-    .login-container h1 {
-      color: #00ff99;
+    .form-container h1 {
+      color: #1d262f;
       margin-bottom: 20px;
     }
 
-    .login-container label {
+    .form-container label {
       display: block;
       text-align: left;
       margin-bottom: 8px;
       font-weight: bold;
     }
 
-    .login-container input[type="text"],
-    .login-container input[type="password"] {
+    .form-container input[type="text"],
+    .form-container input[type="password"] {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
-      border: 1px solid #00ff99;
+      border: 1px solid #ccc;
       border-radius: 4px;
-      background: #222;
-      color: #fff;
+      background: #f9f9f9;
+      color: #333;
+      font-size: 1rem;
     }
 
-    .login-container input[type="text"]:focus,
-    .login-container input[type="password"]:focus {
-      border-color: #00cc88;
+    .form-container input[type="text"]:focus,
+    .form-container input[type="password"]:focus {
+      border-color: #007BFF;
       outline: none;
+      background-color: #fff;
     }
 
-    .login-container button {
-      background-color: #00ff99;
-      color: #1c1c1c;
+    .form-container button {
+      background-color: #1d262f;
+      color: #fff;
       padding: 10px 20px;
       border: none;
       border-radius: 4px;
       font-size: 1rem;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 0 10px rgba(0, 255, 153, 0.8);
       transition: background-color 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .login-container button:hover {
-      background-color: #00cc88;
-      box-shadow: 0 0 15px rgba(0, 255, 153, 1);
+    .form-container button:hover {
+      background-color: #1d262f;
+      box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+    }
+
+    .register-link {
+      display: block;
+      margin-top: 15px;
+      font-size: 0.9rem;
+    }
+
+    .register-link a {
+      color: #1d262f;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      color: red;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      display: none;
     }
   </style>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-  <div class="login-container">
+  <div class="form-container">
     <h1>Login</h1>
-    <form id="login-form" action="/login" method="POST">
-
+    <form id="login-form">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" placeholder="Inserisci il tuo Username" required>
 
@@ -87,7 +111,44 @@
       <input type="password" id="password" name="password" placeholder="Inserisci la tua Password" required>
 
       <button type="submit">Accedi</button>
+      <p id="error-message" class="error-message">Credenziali non valide</p>
     </form>
+
+    <!-- Link per la registrazione -->
+    <p class="register-link">Non hai un account? <a href="registrazione.html">Registrati qui</a></p>
   </div>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async function(event) {
+      event.preventDefault(); // Evita il refresh della pagina
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMessage = document.getElementById('error-message');
+
+      try {
+        const response = await fetch('http://localhost:8080/api/autenticazione/login', { 
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // ✅ Login avvenuto con successo, reindirizza alla home
+          window.location.href = '/main.html';
+        } else {
+          // ❌ Credenziali errate, mostra errore
+          errorMessage.style.display = 'block';
+          errorMessage.textContent = data.error || 'Errore nel login.';
+        }
+      } catch (error) {
+        console.error('Errore durante il login:', error);
+        errorMessage.style.display = 'block';
+        errorMessage.textContent = 'Errore di connessione al server.';
+      }
+    });
+  </script>
 </body>
 </html>

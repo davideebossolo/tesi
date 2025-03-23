@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div id="accelerometer-plot" style="width: 700px; height: 500px;"></div>
+
+    <script>
+        // Simulazione dati accelerometro
+        const time = [...Array(100).keys()]; // 100 punti temporali
+        const x = time.map(t => Math.sin(t * 0.1) * 9.8); // Valori X
+        const y = time.map(t => Math.cos(t * 0.1) * 9.8); // Valori Y
+        const z = time.map(t => 9.8 + Math.random() * 0.5); // Valori Z
+
+        const trace = {
+            x: x, y: y, z: z,
+            mode: 'lines',
+            type: 'scatter3d',
+            line: { width: 4, color: 'blue' }
+        };
+
+        Plotly.newPlot('accelerometer-plot', [trace], {
+            title: 'Dati Accelerometro in 3D',
+            scene: { xaxis: { title: 'X' }, yaxis: { title: 'Y' }, zaxis: { title: 'Z' } }
+        });
+    </script>
+</body>
+</html>

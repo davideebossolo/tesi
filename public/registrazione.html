@@ -12,23 +12,23 @@
       align-items: center;
       height: 100vh;
       margin: 0;
-      background-color: #1c1c1c;
-      color: #fff;
+      background-color: #f9f9f9;
+      color: #333;
     }
 
     .register-container {
-      background: rgba(20, 20, 20, 0.9);
-      border: 2px solid #ff33cc;
+      background: #ffffff;
+      border: 1px solid #ddd;
       border-radius: 8px;
       padding: 30px;
       width: 100%;
       max-width: 400px;
-      box-shadow: 0 0 15px rgba(255, 51, 204, 0.6);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       text-align: center;
     }
 
     .register-container h1 {
-      color: #ff33cc;
+      color: #007BFF;
       margin-bottom: 20px;
     }
 
@@ -41,51 +41,69 @@
 
     .register-container input[type="text"],
     .register-container input[type="password"],
+    .register-container input[type="email"],
+    .register-container input[type="tel"],
     .register-container select {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
-      border: 1px solid #ff33cc;
+      border: 1px solid #ccc;
       border-radius: 4px;
-      background: #222;
-      color: #fff;
+      background: #f9f9f9;
+      color: #333;
+      font-size: 1rem;
     }
 
-    .register-container input[type="text"]:focus,
-    .register-container input[type="password"]:focus,
+    .register-container input:focus,
     .register-container select:focus {
-      border-color: #ff66cc;
+      border-color: #007BFF;
       outline: none;
+      background-color: #fff;
     }
 
     .register-container button {
-      background-color: #ff33cc;
-      color: #1c1c1c;
+      background-color: #007BFF;
+      color: #fff;
       padding: 10px 20px;
       border: none;
       border-radius: 4px;
       font-size: 1rem;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 0 10px rgba(255, 51, 204, 0.8);
       transition: background-color 0.3s ease, box-shadow 0.3s ease;
     }
 
     .register-container button:hover {
-      background-color: #ff66cc;
-      box-shadow: 0 0 15px rgba(255, 102, 204, 1);
+      background-color: #0056b3;
+      box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+    }
+
+    .back-to-login {
+      margin-top: 15px;
+      display: block;
+      text-decoration: none;
+      font-size: 1rem;
+      color: #007BFF;
+      font-weight: bold;
+    }
+
+    .back-to-login:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
   <div class="register-container">
     <h1>Registrazione</h1>
-    <form id="registration-form" action="/register" method="POST">
-      <label for="id">ID</label>
-      <input type="text" id="id" name="id" readonly required>
-
+    <form id="registration-form" action="api/autenticazione/register" method="POST">
       <label for="username">Username</label>
       <input type="text" id="username" name="username" placeholder="Inserisci il tuo Username" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="Inserisci la tua Email" required>
+
+      <label for="phone">Numero di telefono</label>
+      <input type="tel" id="phone" name="phone" placeholder="Inserisci il tuo numero di telefono" required>
 
       <label for="password">Password</label>
       <input type="password" id="password" name="password" placeholder="Inserisci la tua Password" required>
@@ -98,24 +116,51 @@
 
       <button type="submit">Registra</button>
     </form>
+    <div id="error-message" style="color: red; margin-top: 10px;"></div>
+    <a href="/login" class="back-to-login">← Torna al Login</a>
   </div>
 
-  <script>
-    // Genera un ID alfanumerico univoco
-    function generaIdUnico() {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      let id = '';
-      for (let i = 0; i < 12; i++) {
-        id += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return id;
-    }
+<script>
+  document.getElementById('registration-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const errorMessageDiv = document.getElementById('error-message');
+    errorMessageDiv.textContent = "";
 
-    // Pre-popola il campo ID con un valore generato
-    document.addEventListener('DOMContentLoaded', () => {
-      const idField = document.getElementById('id');
-      idField.value = generaIdUnico();
-    });
-  </script>
+    const formData = {
+      username: document.getElementById('username').value,
+      email: document.getElementById('email').value,
+      phone: document.getElementById('phone').value,
+      password: document.getElementById('password').value,
+      role: document.getElementById('role').value
+    };
+
+    console.log("Dati inviati al server:", formData);
+
+    try {
+      const response = await fetch(this.action, {
+        method: this.method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      console.log("Risposta grezza dal server:", response);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Errore nella registrazione: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log("Risposta JSON dal server:", data);
+      errorMessageDiv.style.color = "green";
+      errorMessageDiv.textContent = "Registrazione completata con successo!";
+    } catch (error) {
+      errorMessageDiv.textContent = error.message;
+      console.error("Dettagli errore:", error);
+    }
+  });
+</script>
 </body>
 </html>

@@ -1,8 +1,0 @@
-﻿#datatype,string,long,dateTime:RFC3339,double,string,string,string,string
-#group,false,false,false,false,false,false,false,false
-#default,,,,,,,,
-,result,table,_time,_value,_field,_measurement,device,exercise,timestamp
-,,0,2024-09-30T13:49:29.200688833Z,60.3,accX,four_sensors,74:4D:BD:2C:0D:14,AR,15:49:28
-,,0,2024-09-30T13:49:29.225037224Z,58.84,accX,four_sensors,74:4D:BD:2C:0D:14,AR,15:49:28
-,,0,2024-09-30T13:49:29.241139911Z,55.42,accX,four_sensors,74:4D:BD:2C:0D:14,AR,15:49:28
-,,0,2024-09-30T13:49:29.25578035Z,56.4,accX,four_sensors,74:4D:BD:2C:0D:14,AR,15:49:28

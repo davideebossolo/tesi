@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Paziente</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    /* Impostiamo dei colori blu vivaci per il grafico */
+    :root {
+      --color-completati: #3498db;      /* Blu vibrante */
+      --color-incompleti: #85c1e9;      /* Blu chiaro */
+    }
+    
+    body {
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: radial-gradient(circle, #ffffff, #ffffff);
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      color: #666;
+    }
+    
+    .container {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    /* Sidebar di navigazione */
+    .sidebar {
+      width: 24rem; /* w-96 */
+      height: 100%;
+      overflow: hidden;
+      color: #ccc;
+      background-color: #1b2d3e;
+      border-radius: 0.25rem;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Dashboard container per due colonne (tabella e grafico + card) */
+    .dashboard-container {
+      display: flex;
+      flex-grow: 1;
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2);
+      gap: 20px;
+    }
+    
+    .dashboard-column {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+    
+    .center-column {
+      flex: 2;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    
+    .right-column {
+      flex: 1;
+      min-width: 250px;
+    }
+    
+    /* Stile per la card */
+    .card {
+      background: white;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .card small {
+      display: block;
+      font-size: 14px;
+      color: #666;
+    }
+    .card span {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--color-completati);
+    }
+    /* Nuova classe per rendere la card quadrata */
+    .card.next-training {
+      width: 200px;
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Stile per il grafico */
+    .chart-card {
+      width: 200px;
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+    .chart-card canvas {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .session-container {
+      width: 100%;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #1b2d3e;
+      color: white;
+    }
+    
+    /* Pulsanti coerenti con la sidebar */
+    .btn-primary {
+      background-color: #1b2d3e;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease-in-out;
+    }
+    .btn-primary:hover {
+      background-color: #16222b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar flex flex-col">
+      <!-- Logo -->
+      <a class="flex items-center w-full px-3 mt-3" href="#" style="font-size: larger;">
+        <svg class="w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"></path>
+        </svg>
+        <span class="ml-2 font-bold">The App</span>
+      </a>
+  
+      <!-- User Info -->
+      <div class="flex flex-col items-center p-4 border-b border-gray-700">
+        <img id="user-image" class="w-20 h-20 rounded-full border-2 border-gray-700" src="user-placeholder.jpg" alt="User Image">
+        <h2 id="user-name" class="text-xl font-semibold mt-2">Nome Utente</h2>
+        <p id="user-role" class="text-lg text-gray-400">Ruolo: Caricamento...</p>
+        <a href="/logout" id="auth-link" class="sidebar-link" style="font-size: larger;">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </div>
+  
+      <!-- Navigazione Sidebar -->
+      <nav class="flex flex-col w-full px-2">
+        <a href="/main" class="sidebar-link" style="font-size: larger;">
+          <i class="fas fa-home"></i> HOME
+        </a>
+        <a href="/visualizzaDati" id="menu-visualizza-dati" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+          <i class="fas fa-chart-bar"></i> Visualizza dati
+        </a>
+        <a href="/crea-esercizio" id="menu-create-exercise" class="sidebar-link" style="font-size: larger;">
+          <i class="fas fa-dumbbell"></i> Crea esercizio
+        </a>
+        <a href="/calendario" id="menu-calendar" class="sidebar-link" style="font-size: larger;">
+          <i class="fas fa-calendar-alt"></i> Calendario
+        </a>
+        <a href="/pazienti" id="menu-patient-list" class="sidebar-link" style="font-size: larger;">
+          <i class="fas fa-user-injured"></i> Lista Pazienti
+        </a>
+      </nav>
+    </div>
+  
+    <!-- Dashboard -->
+    <div class="dashboard-container">
+      <!-- Colonna centrale: tabella sessioni -->
+      <div class="dashboard-column center-column">
+        <h2 id="titolo-lista-sessioni">Lista Sessioni di allenamento di <span id="nome-paziente">Utente</span></h2>
+        <div class="session-container">
+          <label for="filter-date">Filtra per data:</label>
+          <input type="date" id="filter-date" class="border p-1 rounded" oninput="filtraSessioni()">
+          <table>
+            <thead>
+              <tr>
+                <th>Data Inizio</th>
+                <th>Stato</th>
+                <th>Esercizi</th>
+                <th>Azioni</th>
+              </tr>
+            </thead>
+            <tbody id="sessionTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+  
+      <!-- Colonna destra: card + grafico -->
+      <div class="dashboard-column right-column">
+        <!-- Card quadrata con la data del prossimo allenamento non ancora iniziato -->
+        <div class="card next-training">
+          <small>Prossimo Allenamento</small>
+          <span id="prossimo-allenamento">N/A</span>
+        </div>
+        <!-- Grafico: Sessioni completate vs non completate -->
+        <div class="chart-card">
+          <canvas id="graficoAllenamenti"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    async function fetchDati() {
+      try {
+        console.log("🔄 [DEBUG] Inizio fetchDati()...");
+        const startTime = performance.now();
+  
+        // Recupero utente autenticato
+        const authResponse = await fetch('/api/users/me');
+        if (!authResponse.ok) {
+          throw new Error(`❌ Errore utente. Status: ${authResponse.status}`);
+        }
+        const utente = await authResponse.json();
+        console.log("✅ [DEBUG] Utente:", utente);
+  
+        // Aggiorno il nome nella parte centrale della dashboard
+        document.getElementById("nome-paziente").textContent = utente.nome || utente.username || utente.name || "Utente";
+  
+        // Determino l'idUtente in base al ruolo
+        const urlParams = new URLSearchParams(window.location.search);
+        const idUtenteFromUrl = urlParams.get("idUtente");
+        const idUtente = (utente.role === "fisioterapista" && idUtenteFromUrl) ? idUtenteFromUrl : utente.id;
+        console.log(`🆔 [DEBUG] ID Utente: ${idUtente}`);
+  
+        // Recupero le sessioni per l'utente
+        const sessionResponse = await fetch(`/api/sessioniPerUtente/${idUtente}`);
+        if (!sessionResponse.ok) {
+          throw new Error(`❌ Errore sessioni. Status: ${sessionResponse.status}`);
+        }
+        const sessioni = await sessionResponse.json();
+        console.log("📋 [DEBUG] Sessioni:", sessioni);
+        const endTime = performance.now();
+        console.log(`⏱️ [DEBUG] Tempo: ${(endTime - startTime).toFixed(2)}ms`);
+  
+        if (!Array.isArray(sessioni) || sessioni.length === 0) {
+          console.warn("⚠️ [DEBUG] Nessuna sessione trovata!");
+          return;
+        }
+  
+        // Memorizza globalmente le sessioni per il filtro
+        sessioniGlobali = sessioni;
+        mostraSessioni(sessioni);
+        aggiornaDashboard(sessioni);
+        aggiornaGrafico(sessioni);
+        console.log("✅ [DEBUG] fetchDati() completato.");
+      } catch (error) {
+        console.error("❌ [DEBUG] Errore fetchDati:", error);
+      }
+    }
+  
+    function aggiornaDashboard(sessioni) {
+      const oggi = new Date();
+      // Filtra le sessioni non ancora iniziate (dataInizio futura)
+      const prossime = sessioni.filter(sessione => new Date(sessione.dataInizio) > oggi);
+      if (prossime.length > 0) {
+        // Ordina per data di inizio ascendente
+        prossime.sort((a, b) => new Date(a.dataInizio) - new Date(b.dataInizio));
+        const next = new Date(prossime[0].dataInizio);
+        document.getElementById("prossimo-allenamento").textContent = next.toLocaleString();
+      } else {
+        document.getElementById("prossimo-allenamento").textContent = "Nessun allenamento in programma";
+      }
+    }
+  
+    function mostraSessioni(sessioni) {
+      const tableBody = document.getElementById("sessionTableBody");
+      tableBody.innerHTML = "";
+      sessioni.forEach(sessione => {
+        const oggi = new Date();
+        const dataInizio = new Date(sessione.dataInizio);
+        const dataFine = sessione.dataFine ? new Date(sessione.dataFine) : null;
+        const completata = dataFine !== null && dataFine <= oggi;
+        const idUtente = sessione.utenteId || sessione.userId || "ID_MANCANTE";
+        const idSessione = sessione._id || sessione.id || "SESSIONE_MANCANTE";
+  
+        const row = document.createElement("tr");
+        row.classList.add("cursor-pointer", "hover:bg-gray-100");
+        row.innerHTML = `
+          <td>${sessione.dataInizio}</td>
+          <td>${completata ? "✅ Completata" : "🟡 Non iniziato"}</td>
+          <td>${sessione.dettagliEsercizi.map(e => e.nomeEsercizio).join(", ")}</td>
+          <td>
+            <button onclick="vaiAVisualizzaDati('${idUtente}', '${idSessione}')" class="px-2 py-1 bg-blue-900 text-white rounded">Visualizza</button>
+            ${!completata ? `<button onclick="avviaSessione('${idSessione}')" class="px-2 py-1 bg-blue-900 text-white rounded ml-2">Avvia</button>` : ''}
+            <button onclick="eliminaSessione('${idSessione}')" class="px-2 py-1 bg-blue-900 text-white rounded ml-2">Elimina</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+  
+    function avviaSessione(sessionId) {
+      if (!sessionId) {
+        alert("❌ Errore: ID sessione non valido.");
+        return;
+      }
+      window.location.href = `/avvia-sessione?id=${sessionId}`;
+    }
+  
+    async function eliminaSessione(idSessione) {
+      if (!confirm("Sei sicuro di voler eliminare questa sessione? ❌")) return;
+      try {
+        const response = await fetch(`/api/sessioni/${idSessione}`, { method: "DELETE" });
+        if (!response.ok) {
+          throw new Error(`Errore: ${response.statusText}`);
+        }
+        alert("✅ Sessione eliminata con successo!");
+        await fetchDati();
+      } catch (error) {
+        console.error("❌ Errore eliminazione:", error);
+        alert("❌ Errore durante l'eliminazione della sessione.");
+      }
+    }
+  
+    function aggiornaGrafico(sessioni) {
+      // Otteniamo i colori dai CSS
+      const rootStyles = getComputedStyle(document.documentElement);
+      const colorCompletati = rootStyles.getPropertyValue('--color-completati').trim();
+      const colorIncompleti = rootStyles.getPropertyValue('--color-incompleti').trim();
+  
+      const oggi = new Date();
+      let completati = 0;
+      sessioni.forEach(sessione => {
+        const dataFine = sessione.dataFine ? new Date(sessione.dataFine) : null;
+        if (dataFine !== null && dataFine <= oggi) {
+          completati++;
+        }
+      });
+      const totali = sessioni.length;
+      const incompleti = totali - completati;
+      
+      // Grafico Sessioni: mostra il rapporto tra sessioni completate e non completate
+      const ctxAllenamenti = document.getElementById("graficoAllenamenti").getContext("2d");
+      new Chart(ctxAllenamenti, {
+        type: "pie",
+        data: {
+          labels: ["Completate", "Non completate"],
+          datasets: [{
+            data: [completati, incompleti],
+            backgroundColor: [colorCompletati, colorIncompleti]
+          }]
+        },
+        options: {
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || "";
+                  const value = context.raw;
+                  return label + ": " + value;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+  
+    function vaiAVisualizzaDati(idUtente, idSessione) {
+      if (!idUtente || !idSessione) {
+        console.error("Errore: idUtente e idSessione sono obbligatori.");
+        return;
+      }
+      window.location.href = `/visualizza-dati-utente-sessione?idUtente=${encodeURIComponent(idUtente)}&idSessione=${encodeURIComponent(idSessione)}`;
+    }
+  
+    function filtraSessioni() {
+      const filterDate = document.getElementById("filter-date").value;
+      const tableBody = document.getElementById("sessionTableBody");
+      tableBody.innerHTML = "";
+      const sessioniFiltrate = sessioniGlobali.filter(sessione =>
+        filterDate === "" || sessione.dataInizio.startsWith(filterDate)
+      );
+      sessioniFiltrate.forEach(sessione => {
+        const oggi = new Date();
+        const dataInizio = new Date(sessione.dataInizio);
+        const stato = oggi >= dataInizio ? "Completata" : "Non iniziato";
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${sessione.dataInizio}</td>
+          <td>${stato}</td>
+          <td>${sessione.dettagliEsercizi.map(e => e.nomeEsercizio).join(", ")}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+  
+    // Variabile globale per il filtro
+    let sessioniGlobali = [];
+    fetchDati();
+  </script>
+  
+  <script src="filtriTabellaValori.js"></script>
+  <script src="fetchUserInfo.js"></script>
+  <script src="fetchPatientList.js"></script>
+  <script src="fetchCalendar.js"></script>
+  <script src="authHandler.js"></script>
+</body>
+</html>

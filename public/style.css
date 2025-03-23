@@ -1,275 +1,147 @@
-   /* Stile generale del corpo */
-   body {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    height: 100%; /* Modificato da 100vh a 100% */
-    margin: 0;
-    font-family: 'Courier New', Courier, monospace;
-    color: #e0e0e0;
-    background-color: darkslategrey;
-    overflow-x: hidden; /* Evita lo scroll orizzontale */
-    overflow-y: auto; /* Abilita lo scroll verticale */
-    padding: 10px; /* Spazio interno per un aspetto migliore */
-  }
-  
-  /* Stile per contenitori principali */
-  .main-content {
-    flex: 1;
-    padding: 20px;
-    box-sizing: border-box;
-    width: 100%;
-    overflow-y: auto; /* Scorrimento interno per il contenuto principale */
-  }
-
-
-
-
-
-canvas {
-  display: block; /* Rimuove il margine extra */
-  margin: 0 auto; /* Centra il grafico */
-  max-width: 100%; /* Rende il grafico reattivo */
-  height: 400px; /* Altezza fissa per evitare espansione */
+/* General Reset */
+body, h1, h2, p, ul, li, a {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-    /* Stile per il menu laterale con animazione */
-    .dropdown-menu {
-      position: fixed;
-      top: 0;
-      right: -300px; /* Nasconde inizialmente il menu */
-      width: 300px;
-      height: 100%;
-      background-color: #1a1a1a;
-      border-left: 2px solid #00ffff;
-      box-shadow: -4px 0 8px rgba(0, 0, 0, 0.5);
-      overflow-y: auto;
-      transition: right 0.5s ease; /* Animazione di transizione */
-      padding: 20px;
-      box-sizing: border-box;
-    }
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
 
-    .dropdown-menu.open {
-      right: 0; /* Mostra il menu */
-    }
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
 
-    .dropdown-menu h2 {
-      color: #00ffff;
-      font-size: 1.5rem;
-      margin-bottom: 15px;
-    }
-
-    .user-list {
-      list-style: none;
-      padding: 0;
-    }
-
-    .user-list li {
-      margin-bottom: 10px;
-    }
-
-    .user-list a {
-      text-decoration: none;
-      color: #00ffff;
-      padding: 8px 12px;
-      border: 2px solid #00ffff;
-      border-radius: 5px;
-      display: block;
-      transition: color 0.3s, border-color 0.3s;
-    }
-
-    .user-list a:hover {
-      color: #ff00ff;
-      border-color: #ff00ff;
-    }
-
-/* Stile del menu cyberpunk */
-.cyberpunk-menu {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  width: 100%;
-  background-color: #1a1a1a;
+header {
+  background: #ff7a00;
+  color: #fff;
   padding: 10px 0;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
-.cyberpunk-menu img.logo {
-  width: 30px;
-  height: 30px;
-  margin-right: 10px;
+header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.cyberpunk-menu a {
-  color: #00ffff;
-  text-decoration: none;
-  font-size: 1rem;
+header h1 {
+  font-size: 24px;
+}
+
+header nav ul {
+  list-style: none;
+  display: flex;
+}
+
+header nav ul li {
   margin: 0 10px;
-  padding: 8px 12px;
-  border: 2px solid #00ffff;
-  border-radius: 5px;
-  transition: color 0.3s, border-color 0.3s;
 }
 
-.cyberpunk-menu a:hover {
-  color: #ff00ff;
-  border-color: #ff00ff;
+header nav ul li a {
+  color: #fff;
+  text-decoration: none;
 }
 
-/* Contenitore per esercizio e timer */
-.exercise-container, .timer-container {
-  background-color: #1a1a1a;
-  border: 2px solid #00ffff;
-  border-radius: 12px;
-  padding: 20px;
-  width: 100%;
-  max-width: 500px;
+.hero {
+  background: #f4f4f4;
+  padding: 50px 0;
   text-align: center;
-  margin-top: 20px;
-  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
 }
 
-/* Stile dei nomi degli esercizi */
-.exercise-name {
-  font-size: 1.6rem;
-  color: #00ffff;
-  font-weight: bold;
+.hero h2 {
+  font-size: 28px;
   margin-bottom: 10px;
 }
 
-.exercise-details {
-  font-size: 1.2rem;
-  color: #e0e0e0;
-  margin-top: 10px;
+.hero p {
+  margin-bottom: 20px;
 }
 
-/* Stile per ogni voce della scheda */
-.exercise-item {
-  margin: 5px 0;
+.hero .cta-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #ff7a00;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
 }
 
-.exercise-item strong {
-  color: #00ffff;
-  font-weight: bold;
+.form-section {
+  background: #fff;
+  padding: 30px 20px;
 }
 
-/* Stile uniforme per tutti i pulsanti */
-.button {
-  margin-top: 15px;
-  padding: 12px 24px;
-  background-color: #00ffff;
-  border: none;
-  border-radius: 8px;
-  color: #1a1a1a;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.button:hover {
-  background-color: #ff00ff;
-  color: #ffffff;
-}
-
-/* Contenitore per i pulsanti Previous e Next */
-.exercise-controls {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-  gap: 10px;
-}
-
-/* Stile del display del timer per effetto orologio digitale */
-.timer-display {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 3rem; /* Ridimensionato per schermi piccoli */
-  color: #00ffff;
-  
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 2px solid #00ffff;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.7); /* Bagliore verde */
+.form-section h2 {
   text-align: center;
-  width: 100%; /* Larghezza completa per centraggio */
-  max-width: 200px;
-  margin: 20px auto;
-  transition: all 0.2s ease-in-out;
+  margin-bottom: 20px;
 }
 
-/* Effetto al passaggio del mouse sul display del timer */
-.timer-display:hover {
-  color: #00ffff;
-  border-color: #00ffff;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
-  transition: color 0.2s, border-color 0.2s, box-shadow 0.2s;
+form label {
+  display: block;
+  margin: 10px 0 5px;
 }
 
-/* Stile per i pulsanti di controllo del timer */
-.timer-controls .button {
-  font-size: 1.2rem;
-  padding: 8px 16px;
-  width: 80px; /* Uniformità nella dimensione */
+form input, form select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-/* Media Query per ottimizzare l'aspetto su iPhone e schermi più piccoli */
-@media (max-width: 480px) {
-  .cyberpunk-menu a {
-    font-size: 0.9rem;
-    padding: 6px 10px;
-    margin: 0 5px;
-  }
-
-  .cyberpunk-menu img.logo {
-    width: 25px;
-    height: 25px;
-    margin-right: 5px;
-  }
-
-  .exercise-container, .timer-container {
-    width: 95%;
-    padding: 15px;
-  }
-
-  .exercise-name {
-    font-size: 1.4rem;
-  }
-
-  .exercise-details {
-    font-size: 1rem;
-  }
-
-  .button {
-    padding: 10px 20px;
-    font-size: 1rem;
-  }
-
-  .timer-display {
-    font-size: 2.5rem;
-    padding: 6px 12px;
-    max-width: 180px;
-  }
-
-  .timer-controls .button {
-    font-size: 1rem;
-    padding: 6px 10px;
-    width: 60px;
-  }
+form .cta-button {
+  width: 100%;
+  background: #ff7a00;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.5s ease;
-      z-index: 5;
-    }
 
-    .overlay.show {
-      opacity: 1;
-      visibility: visible;
-    }
+form .cta-button:hover {
+  background: #e86900;
+}
+
+.inventory {
+  padding: 30px 20px;
+  background: #f9f9f9;
+}
+
+.inventory h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table thead {
+  background: #ff7a00;
+  color: #fff;
+}
+
+table th, table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+footer {
+  background: #333;
+  color: #fff;
+  text-align: center;
+  padding: 10px 0;
+}
+
+footer a {
+  color: #ff7a00;
+  text-decoration: none;
+}

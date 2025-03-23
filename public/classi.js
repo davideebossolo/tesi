@@ -40,6 +40,7 @@ class Sessione {
     this.dataInizio = formattaData(new Date());
     this.dataFine = null;
     this.checkConnection = false;
+    this.sessioneConclusa = false; // Nuovo campo
     this.programmaEsercizi = [];
     this.eserciziEseguiti = [];
     this.esercizioCorrente = null;
@@ -90,6 +91,7 @@ class Sessione {
 
   endSession() {
     this.dataFine = formattaData(new Date());
+    this.sessioneConclusa = true; // Segna la sessione come conclusa
     addLog(`Sessione ${this.id} completata alle ${this.dataFine}.`);
   }
 }

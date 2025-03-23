@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista Pazienti</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style> 
+        body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #2c3e50;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: scroll;
+    background: radial-gradient(circle, #ffffff, #ffffff);
+  }
+  
+  .container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="flex flex-col w-64 h-screen overflow-hidden text-gray-400 bg-gray-900 rounded">
+            <!-- Logo -->
+            <a class="flex items-center w-full px-3 mt-3" href="#" style="font-size: larger;">
+                <svg class="w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"></path>
+                </svg>
+                <span class="ml-2 font-bold">The App</span>
+            </a>
+        
+            <!-- User Info -->
+            <div class="flex flex-col items-center p-4 border-b border-gray-700 bg-gray-900 text-white">
+              <img id="user-image" class="w-20 h-20 rounded-full border-2 border-gray-600" src="user-placeholder.jpg" alt="User Image">
+              <h2 id="user-name" class="text-xl font-semibold mt-2 text-white">Nome Utente</h2>
+              <p id="user-role" class="text-lg text-gray-400">Ruolo: Caricamento...</p>
+          </div>
+          
+        
+            <!-- Sidebar Navigation -->
+            <nav class="flex flex-col w-full px-2 flex-grow">
+                <a href="/main" class="sidebar-link" style="font-size: larger;">HOME</a>
+                <a href="/visualizzaDati" id="menu-visualizza-dati" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+                <a href="/logout" id="auth-link" class="sidebar-link" style="font-size: larger;">Logout</a>
+                <a href="/crea-esercizio" id="menu-create-exercise" class="sidebar-link" style="font-size: larger;">Crea esercizio</a>
+                <a href="/calendario" id="menu-calendar" class="sidebar-link" style="font-size: larger;">Calendario</a>
+            </nav>
+        </div>
+
+        <div class="max-w-6xl w-11/12 mx-auto bg-white p-6 rounded-lg shadow-md">
+
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Lista Pazienti</h2>
+        
+            <!-- 🔍 Campo di ricerca -->
+            <div class="flex mb-4">
+                <input type="text" id="search-personal-patient" placeholder=" Cerca nei tuoi pazienti..."
+                    class="border p-2 rounded-l-md flex-grow">
+                <button id="filter-personal-button"
+                    class="bg-gray-900 text-white px-4 py-2 rounded-r-md hover:bg-gray-700">
+                    Filtra
+                </button>
+            </div>
+        
+            <!-- 📋 Tabella dei pazienti -->
+            <div class="overflow-y-auto max-h-96 border rounded-lg shadow-md">
+                <table class="w-full border-collapse border border-gray-300">
+                    <thead class="bg-gray-200 sticky top-0">
+                        <tr>
+                            <th class="border px-4 py-2">Nome Paziente</th>
+                            <th class="border px-4 py-2">Email</th>
+                            <th class="border px-4 py-2">Numero di Telefono</th>
+                            <th class="border px-4 py-2">Visualizza Allenamenti</th>
+                            <th class="border px-4 py-2">Rimuovi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="personal-patient-list"></tbody>
+                </table>
+            </div>
+        
+            <!-- 📌 Pulsante per mostrare la lista completa -->
+            <button id="toggle-all-patient-list"
+                class="bg-gray-900 text-white px-4 py-2 rounded-md mt-4 hover:bg-gray-700">
+                ➕ Aggiungi paziente alla tua lista
+            </button>
+        
+            <!-- 🔍 Campo di ricerca per la lista completa -->
+            <div class="flex mb-4 mt-4 hidden" id="all-patient-search-container">
+                <input type="text" id="search-all-patient" placeholder=" Cerca tra tutti i pazienti..."
+                    class="border p-2 rounded-l-md flex-grow">
+                <button id="filter-all-button"
+                    class="bg-gray-900 text-white px-4 py-2 rounded-r-md hover:bg-gray-700">
+                    Filtra
+                </button>
+            </div>
+        
+            <!-- 📋 Tabella completa dei pazienti -->
+            <div class="overflow-y-auto max-h-96">
+                <table class="w-full border-collapse border border-gray-300 hidden" id="all-patient-list">
+                    <thead class="sticky top-0 bg-gray-200">
+                        <tr>
+                            <th class="border border-gray-300 px-4 py-2">Nome Paziente</th>
+                            <th class="border border-gray-300 px-4 py-2">Email</th>
+                            <th class="border border-gray-300 px-4 py-2">Numero di Telefono</th>
+                            <th class="border border-gray-300 px-4 py-2">visualizzazione sessioni di allenamento</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        
+        </div>
+            
+</div>
+</body>
+
+<script src="fetchUserInfo.js"></script>
+<script src="fetchPatientList.js"></script>
+<script src="fetchCalendar.js"></script>
+<script src="authHandler.js"></script>
+
+</html>

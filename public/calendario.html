@@ -4,171 +4,258 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calendario</title>
-  <!-- FullCalendar CSS -->
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.css" rel="stylesheet">
-  <!-- FullCalendar JavaScript -->
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.2/main.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
+      background-color: #ffffff;
       margin: 0;
       padding: 0;
-    }
-    #calendar {
-      max-width: 900px;
-      margin: 50px auto;
-    }
-    #popup {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 20px;
-      border: 1px solid #ccc;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-      max-width: 400px;
-      text-align: center;
-    }
-    #popup h2 {
-      margin: 0 0 10px;
-    }
-    #popup ul {
-      list-style: none;
-      padding: 0;
-      margin: 10px 0;
-      text-align: left;
-    }
-    #popup ul li {
-      margin-bottom: 10px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
-    #popup ul li button {
-      padding: 5px 10px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #popup ul li button:hover {
-      background: #0056b3;
-    }
-    #close-popup {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #dc3545;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      cursor: pointer;
-      border-radius: 50%;
-    }
-    #close-popup:hover {
-      background: #a71d2a;
-    }
+    .container {
+  display: flex;
+  flex: 1;
+  height: 100vh; /* Occupa tutta l'altezza dello schermo */
+}
+
+#calendar {
+  flex-grow: 1; /* Si espande per occupare tutto lo spazio disponibile */
+  width: 100%; /* Usa tutta la larghezza */
+  height: 100%; /* Occupa tutta l'altezza della sua div */
+  margin: 0; /* Rimuove il margine per un layout più ampio */
+  padding: 20px;
+  background: #ffffff;
+  overflow: hidden; /* Evita problemi di overflow */
+}
+.popup-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    width: 350px;
+    text-align: center;
+  }
+
+  .popup-title {
+    font-size: 1.5rem;
+    color: #003366;
+    margin-bottom: 15px;
+  }
+
+  .popup-button {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    background-color: #003366; /* Blu scuro */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    margin-top: 15px;
+  }
+
+  .popup-button:hover {
+    background-color: #002244; /* Blu ancora più scuro */
+  }
+
+
   </style>
 </head>
 <body>
-  <h1 style="text-align: center;">Calendario allenamenti programmati</h1>
-  <div id="calendar"></div>
-  <div id="popup">
-    <button id="close-popup">&times;</button>
-    <h2>Allenamenti di oggi</h2>
-    <ul id="popup-list"></ul>
+  <div class="container">
+    <div class="flex flex-col w-64 h-screen overflow-hidden text-gray-400 bg-gray-900 rounded">
+      <!-- Logo -->
+      <a class="flex items-center w-full px-3 mt-3" href="#" style="font-size: larger;">
+          <svg class="w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"></path>
+          </svg>
+          <span class="ml-2 font-bold">The App</span>
+      </a>
+  
+      <!-- User Info -->
+      <div class="flex flex-col items-center p-4 border-b border-gray-700 bg-gray-900 text-white">
+        <img id="user-image" class="w-20 h-20 rounded-full border-2 border-gray-600" src="user-placeholder.jpg" alt="User Image">
+        <h2 id="user-name" class="text-xl font-semibold mt-2 text-white">Nome Utente</h2>
+        <p id="user-role" class="text-lg text-gray-400">Ruolo: Caricamento...</p>
+    </div>
+    
+  
+      <!-- Sidebar Navigation -->
+      <nav class="flex flex-col w-full px-2 flex-grow">
+          <a href="/main" class="sidebar-link" style="font-size: larger;">HOME</a>
+          <a href="/visualizzaDati" id="menu-visualizza-dati" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+          <a href="/logout" id="auth-link" class="sidebar-link" style="font-size: larger;">Logout</a>
+          <a href="/crea-esercizio" id="menu-create-exercise" class="sidebar-link" style="font-size: larger;">Crea esercizio</a>
+          <a href="/calendario" id="menu-calendar" class="sidebar-link" style="font-size: larger;">Calendario</a>
+      </nav>
   </div>
+
+
+
+  <div id="calendar"></div>
+</div>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const calendarEl = document.getElementById('calendar');
-      const popup = document.getElementById('popup');
-      const popupList = document.getElementById('popup-list');
-      const closePopupButton = document.getElementById('close-popup');
-      let todaySessions = [];
+
+      // Colori per gli utenti
+      const userColors = {};
+      const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A8', '#FFD733', '#33FFF7', '#C70039'];
 
       const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          right: 'dayGridMonth,timeGridWeek,timeGridDay',
         },
+        buttonText: {
+        today: 'Oggi',
+        month: 'Mese',
+        week: 'Settimana',
+        day: 'Giorno',
+        list: 'Lista',
+        prev: 'Prec',
+        next: 'Succ'
+      },
         events: async function (fetchInfo, successCallback, failureCallback) {
           try {
             const response = await fetch('/api/sessioni');
             if (!response.ok) throw new Error('Errore durante il recupero delle sessioni');
             const sessioni = await response.json();
 
-            const today = new Date().toISOString().split('T')[0]; // Ottieni la data di oggi (formato YYYY-MM-DD)
-
-            // Filtra sessioni per oggi
-            todaySessions = sessioni.filter(sessione => sessione.dataInizio.startsWith(today));
-
-            if (todaySessions.length > 0) {
-              popup.style.display = 'block'; // Mostra il popup
-              popupList.innerHTML = ""; // Svuota la lista
-              todaySessions.forEach(sessione => {
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `
-                  <span>Utente: ${sessione.utente.username}, Inizio: ${sessione.dataInizio}</span>
-                  <button data-id="${sessione._id}" class="start-session-btn">Avvia</button>
-                `;
-                popupList.appendChild(listItem);
-              });
-
-              // Aggiungi evento click ai pulsanti di avvio
-              document.querySelectorAll('.start-session-btn').forEach(button => {
-                button.addEventListener('click', function () {
-                  const sessionId = this.getAttribute('data-id');
-                  if (sessionId) {
-                    window.location.href = `/avvia-sessione?id=${sessionId}`;
-                  }
-                });
-              });
-            }
-
             // Mappa sessioni per il calendario
-            const eventi = sessioni.map(sessione => ({
-              id: sessione._id,
-              title: `Utente: ${sessione.utente.username}`,
-              start: sessione.dataInizio,
-              end: sessione.dataFine || sessione.dataInizio,
-              description: sessione.programmaEsercizi.map(e => e.nomeEsercizio).join(', '),
-            }));
+            const eventi = sessioni.map(sessione => {
+              // Assegna un colore univoco per ogni utente
+              if (!userColors[sessione.utente.username]) {
+                userColors[sessione.utente.username] =
+                  colors[Object.keys(userColors).length % colors.length];
+              }
+              return {
+                id: sessione._id,
+                title: `Utente: ${sessione.utente.username}`,
+                start: sessione.dataInizio,
+                end: sessione.dataFine || sessione.dataInizio,
+                description: sessione.dettagliEsercizi.length > 0 
+                  ? sessione.dettagliEsercizi.map(e => e.nomeEsercizio).join(', ') 
+                  : "Nessun esercizio",
+                backgroundColor: userColors[sessione.utente.username],
+                borderColor: userColors[sessione.utente.username],
+              };
+            });
 
-            successCallback(eventi); // Passa gli eventi al calendario
+            successCallback(eventi);
           } catch (error) {
-            console.error(error);
+            console.error(" Errore nel caricamento degli eventi:", error);
             failureCallback(error);
           }
         },
         dateClick: function (info) {
-          // Reindirizza alla pagina di creazione della sessione con la data selezionata
-          const selectedDate = info.dateStr; // Ottieni la data selezionata (formato YYYY-MM-DD)
+          const selectedDate = info.dateStr;
           window.location.href = `/crea-sessione?data=${selectedDate}`;
         },
         eventClick: function (info) {
-          alert(
-            `Dettagli sessione:\n` +
-            `Utente: ${info.event.title}\n` +
-            `Inizio: ${info.event.start.toISOString()}\n` +
-            `Fine: ${info.event.end ? info.event.end.toISOString() : 'N/A'}\n` +
-            `Esercizi: ${info.event.extendedProps.description}`
-          );
-        }
-      });
+    const sessionId = info.event.id; 
+    const userName = info.event.title.replace("Utente: ", ""); 
 
-      // Chiudi il popup
-      closePopupButton.addEventListener('click', function () {
-        popup.style.display = 'none';
+    // Formatta la data in gg/mm/aaaa ore xx:xx
+    function formatDateTime(date) {
+        if (!date) return "N/A";
+        const d = new Date(date);
+        return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()} ore ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+    }
+
+    const formattedStartDate = formatDateTime(info.event.start);
+
+    const sessionDetails = `
+        <p><strong>Utente:</strong> ${userName}</p>
+        <p><strong>Data e ora:</strong> ${formattedStartDate}</p>
+        <p><strong>Esercizi:</strong> ${info.event.extendedProps.description}</p>
+        <a href="/avvia-sessione?id=${sessionId}" 
+           style="display:inline-block; margin-top:10px; padding:8px 12px; background:#003366; color:white; border-radius:5px; text-decoration:none;">
+            Avvia Sessione
+        </a>
+    `;
+
+    // Mostra i dettagli in un popup
+    const popup = document.createElement("div");
+    popup.classList.add("popup-overlay");
+
+    popup.innerHTML = `
+        <div class="popup-content">
+            <h3 class="popup-title"> Dettagli Sessione</h3>
+            ${sessionDetails}
+            <button id="delete-session" class="popup-button" style="background-color: #dc3545;">Elimina Sessione</button>
+            <button id="close-popup" class="popup-button" style="background-color: #dc3545;">Chiudi</button>
+            
+        </div>
+    `;
+
+    document.body.appendChild(popup);
+
+    document.getElementById("close-popup").addEventListener("click", function () {
+        document.body.removeChild(popup);
+    });
+    document.getElementById("delete-session").addEventListener("click", async function () {
+            try {
+              const response = await fetch(`/api/sessioni/${sessionId}`, { method: 'DELETE' });
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Errore nell'eliminazione della sessione");
+              }
+              document.body.removeChild(popup);
+              calendar.refetchEvents();
+            } catch (error) {
+              console.error("Errore durante l'eliminazione:", error);
+              alert("Errore durante l'eliminazione della sessione: " + error.message);
+            }
+          });
+
+
+},
+
+
       });
 
       calendar.render();
     });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+    const popupApertura = document.createElement("div");
+    popupApertura.classList.add("popup-overlay");
+
+    popupApertura.innerHTML = `
+      <h3 class="popup-title"> Informazioni</h3>
+      <p class="popup-text">Seleziona una sessione dal calendario per avviarla.</p>
+      <p class="popup-text">Oppure tocca su una cella per programmare una nuova sessione.</p>
+      <button id="close-popup" class="popup-button">OK</button>
+    `;
+
+    document.body.appendChild(popupApertura);
+
+    document.getElementById("close-popup").addEventListener("click", function () {
+        document.body.removeChild(popupApertura);
+    });
+});
+
   </script>
+    <script src="fetchUserInfo.js"></script>
+    <script src="fetchPatientList.js"></script>
+    <script src="fetchCalendar.js"></script>
+    <script src="authHandler.js"></script>
+
+
 </body>
 </html>

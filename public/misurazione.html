@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Avvia Esercizio</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
 .hidden {
     display: none;
@@ -25,20 +26,9 @@
   margin: 0;
   padding: 0;
 }
-
-body {
-  background: var(--background);
-  color: var(--text);
-  font-family: Arial, sans-serif;
+body{
   display: flex;
-  justify-content: center;
-  align-items: flex-start; /* Cambia align-items per allineare in alto */
-  flex-direction: column;
-  height: 100%; /* Cambiato da 100vh a 100% per evitare overflow */
-  overflow-x: hidden;
-  padding-top: 20px; /* Aggiungi spazio in alto */
 }
-
 main {
   display: flex;
   flex-direction: column;
@@ -48,6 +38,21 @@ main {
   max-width: 1200px;
   padding: 20px 0; /* Spazio interno per evitare tagli */
 }
+
+
+#exercise-list-wrapper {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out;
+}
+
+#exercise-list-wrapper.show {
+    max-height: 500px; /* Altezza massima per l'espansione */
+    overflow-y: auto;
+}
+/* Centrare il pulsante "Cambia Esercizio" e renderlo più grande */
+
+
 #activity-container {
   display: flex;
   flex-direction: column;
@@ -86,23 +91,12 @@ main {
 
 div {
   background: var(--primary);
-  border: 1px solid var(--border);
+  border: none; /* Rimuove il bordo */
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 4px var(--shadow);
 }
 
-.boton-container {
-  width: 20%;
-  display: flex;
-  justify-content: left;
-  align-items: center;
-  position: relative;
-}
-
-#toggle-btn {
-  -webkit-appearance: none;
-}
 
 /* Pulsanti */
 button {
@@ -117,129 +111,6 @@ button {
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.boton-wrapper {
-  position: absolute;
-  z-index: 999;
-  width: 320px;
-  height: 65px;
-  background: var(--btCinza);
-  border-radius: 15px;
-  cursor: pointer;
-  display: flex;
-  justify-content: left;
-  align-items: center;
-  padding: 0 24px;
-  overflow: hidden;
-  transition: width 300ms linear;
-}
-
-.boton-wrapper:before {
-  position: absolute;
-  content: "";
-  width: 20px;
-  height: 2px;
-  background: var(--icons);
-  transform: rotate(225deg);
-  transition: all 0.4s ease;
-}
-
-.boton-wrapper:after {
-  position: absolute;
-  content: "";
-  width: 20px;
-  height: 2px;
-  background: var(--icons);
-  transform: rotate(135deg);
-  transition: all 0.4s ease;
-}
-
-.boton-menu {
-  opacity: 1;
-  transition: all 0.5s ease-in-out;
-  background: var(--btCinza);
-  width: 100%;
-  border-radius: 5px;
-  transform: translateX(10%);
-  padding: 10px;
-}
-
-.boton-menu ul {
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: row;
-}
-
-.boton-menu ul li {
-  opacity: 0;
-  list-style: none;
-}
-
-.boton-menu ul li:nth-child(1) {
-  transform-origin: bottom;
-  animation: itop 300ms 300ms linear forwards;
-}
-
-.boton-menu ul li:nth-child(2) {
-  transform-origin: bottom;
-  animation: itop 300ms 400ms linear forwards;
-}
-
-.boton-menu ul li:nth-child(3) {
-  transform-origin: bottom;
-  animation: itop 300ms 500ms linear forwards;
-}
-
-.boton-menu ul li:nth-child(4) {
-  transform-origin: bottom;
-  animation: itop 300ms 600ms linear forwards;
-}
-
-.boton-menu ul li a {
-  transition: all 0.5s linear;
-  text-decoration: none;
-  color: var(--icons);
-  font-size: 20px;
-  width: 52px;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 10px 0 0;
-  border-radius: 15px;
-}
-
-.boton-menu ul li a:hover {
-  color: var(--branco);
-  background: var(--darkbg);
-  border-radius: 15px;
-}
-
-#toggle-btn:checked ~ label .boton-menu {
-  display: none;
-  opacity: 0;
-  transform: translateX(0);
-}
-
-#toggle-btn:checked ~ .boton-wrapper:before {
-  transform: rotate(90deg);
-}
-
-#toggle-btn:checked ~ .boton-wrapper:after {
-  transform: rotate(0deg);
-}
-
-#toggle-btn:checked ~ .boton-wrapper {
-  width: 70px;
-  transition: all 0.1s linear;
-}
-
-@media (max-width: 640px) {
-  .boton-container {
-    width: 100%;
-  }
-}
-
 @keyframes itop {
   0% {
     opacity: 0;
@@ -251,6 +122,21 @@ button {
   }
 }
 
+/* Rendi il timer quadrato e grande come le altre card */
+#timer-container {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  background: #222;
+  color: #00ff99;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
 
 .menu-checkbox {
   display: none; /* Nasconde il checkbox, necessario solo per il controllo. */
@@ -261,17 +147,16 @@ button {
 }
 
 .menu-dots {
-  width: 5rem; /* Larghezza del pulsante principale (cerchio). */
-  height: 5rem; /* Altezza del pulsante principale (cerchio). */
-  border-radius: 50%; /* Trasforma l'elemento in un cerchio. */
-  box-shadow: 0 0 0 0.3rem #161e3f; /* Aggiunge un bordo scuro al cerchio. */
-  display: flex; /* Imposta il contenitore come flexbox. */
-  flex-direction: column; /* Dispone i punti in colonna. */
-  align-items: center; /* Centra i punti orizzontalmente. */
-  justify-content: center; /* Centra i punti verticalmente. */
-  transform: rotate(90deg); /* Ruota il cerchio di 90 gradi. */
-  transition: 0.3s; /* Anima le modifiche con una durata di 0,3 secondi. */
-  cursor: pointer; /* Cambia il cursore in "pointer" per indicare interattività. */
+  width: 5rem; /* Larghezza del pulsante principale (cerchio) */
+  height: 5rem; /* Altezza del pulsante principale (cerchio) */
+  border-radius: 50%; /* Trasforma l'elemento in un cerchio */
+  box-shadow: 0 0 0 0.3rem #161e3f; /* Aggiunge un bordo scuro al cerchio */
+  display: flex; /* Imposta il contenitore come flexbox */
+  flex-direction: column; /* Dispone i punti in colonna */
+  align-items: center; /* Centra i punti orizzontalmente */
+  justify-content: center; /* Centra i punti verticalmente */
+  transition: 0.3s; /* Anima le modifiche con una durata di 0,3 secondi */
+  cursor: pointer; /* Cambia il cursore in "pointer" per indicare interattività */
 }
 
 .menu-dots:hover {
@@ -346,7 +231,7 @@ button {
 
 .menu-checkbox:checked + .menu > .menu-dots {
   transform: none; /* Ripristina la rotazione dei punti. */
-  box-shadow: 0 0 0 6rem #161e3f; /* Aggiunge un'ombra grande che circonda i punti. */
+  box-shadow: 0 0 0 6rem #c8d3fd; /* Aggiunge un'ombra grande che circonda i punti. */
 }
 
 .menu-closer-overlay {
@@ -393,14 +278,14 @@ button {
 
 #log-container {
   width: 80%;
-  height: 70%;
-  background: rgba(20, 20, 20, 0.9);
-  border: 2px solid #00ff99;
+  background: var(--secondary);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  overflow-y: auto;
   padding: 20px;
-  box-shadow: 0 0 15px #00ff99;
-  margin-top: 40px; /* Aggiunto margine superiore per spostare più in basso */
+  box-shadow: 0 4px 6px var(--shadow);
+  color: var(--text);
+  font-size: 1rem;
+  overflow-y: auto;
 }
 
 
@@ -437,14 +322,6 @@ button {
       }
     }
 
- /* Liste esercizi */
-#exercise-list-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-  margin: 20px 0;
-}
 
 .exercise-item {
   width: calc(50% - 20px);
@@ -504,16 +381,24 @@ button {
 
 /* Contenitore dettagli sessione */
 #session-details-container {
-  width: 80%;
-  background: var(--secondary);
+  width: 90%; /* Aumenta la larghezza */
+  max-height: 0; /* Nasconde inizialmente */
+  transition: max-height 0.5s ease-out, padding 0.3s ease-out; 
+  background: var(--primary);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 20px;
+  padding: 0; /* Evita spazio extra quando è nascosto */
   box-shadow: 0 4px 6px var(--shadow);
   color: var(--text);
   font-size: 1rem;
-  overflow-y: auto;
+  margin: 20px auto;
 }
+
+#session-details-container.expanded {
+  max-height: 600px; /* Espansione maggiore */
+  padding: 20px; /* Mostra il contenuto con spazio interno */
+}
+
 
 #session-details-container h3 {
   color: var(--highlight);
@@ -535,11 +420,7 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 20px; /* Spaziatura tra gli elementi */
-  padding: 20px;
-  background: var(--background); /* Sfondo scuro semi-trasparente */
-  border: 2px solid #00ff99; /* Bordo Cyberpunk */
-  border-radius: 8px; /* Angoli arrotondati */
-  box-shadow: 0 0 15px rgba(0, 255, 153, 0.6); /* Effetto alone luminoso */
+  padding: 20px;/* Sfondo scuro semi-trasparente *//* Bordo Cyberpunk *//* Angoli arrotondati *//* Effetto alone luminoso */
   margin: 20px auto; /* Centrare con margine */
   max-width: 80%; /* Limita la larghezza massima */
 }
@@ -553,26 +434,11 @@ button {
 
 .flex-container #current-exercise-details {
   flex-grow: 1; /* Rende il contenuto dei dettagli espandibile */
-  padding: 20px;
-  background:var(--background); /* Sfondo scuro semi-trasparente */
-  border: 2px solid #ff33cc; /* Bordo Cyberpunk viola */
-  border-radius: 8px; /* Angoli arrotondati */
-  box-shadow: 0 0 15px rgba(255, 51, 204, 0.6); /* Effetto alone luminoso */
+  padding: 20px; /* Sfondo scuro semi-trasparente */  /* Angoli arrotondati */
   color: #000000; /* Testo bianco */
   font-size: 1rem;
 }
-#timer-container {
-  margin: 20px;
-  padding: 10px 20px;
-  background: rgba(20, 20, 20, 0.9);
-  border: 2px solid #00ff99;
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 255, 153, 0.6);
-  text-align: center;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 1.5rem;
-  color: #00ff99;
-}
+
 /* Stile per il countdown overlay */
 #countdown-overlay {
   position: fixed;
@@ -594,110 +460,504 @@ button {
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
+section{
+  display: flex;
+      flex-direction: row;
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+}
+.side-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+.card{
+    background: white;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      margin-bottom: 10px;
+      width: 200px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+}
+
+.card > div {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rounded-iframe {
+    border-radius: 15px; /* Arrotonda i bordi */
+    overflow: hidden; /* Evita la fuoriuscita del contenuto */
+}
+
+.exercise-controls {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.control-button {
+  background: #4CAF50; /* Verde per il play */
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.control-button svg {
+  fill: white;
+  width: 30px;
+  height: 30px;
+}
+
+/* Effetto Hover */
+.control-button:hover {
+  transform: scale(1.1);
+}
+
+/* Stile per il pulsante Stop */
+.control-button.stop {
+  background: #ff4444; /* Rosso per lo stop */
+}
+
+.exercise-item img {
+  width: 100%; /* Occupa tutta la larghezza disponibile */
+  height: 120px; /* Altezza ridotta per renderla rettangolare */
+  object-fit: cover; /* Assicura che l'immagine si adatti bene senza deformarsi */
+  border-radius: 8px; /* Mantiene gli angoli arrotondati */
+  margin-bottom: 10px; /* Distanza tra immagine e testo */
+}
+
+.session-header{
+  display: flex;
+}
+
+.hidden-section {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-out;
+}
+
+.expanded {
+  max-height: 500px; /* Puoi modificare l'altezza massima */
+  overflow-y: auto;
+}
+
+#current-exercise-details img {
+  width: 100px; /* Ridotta */
+  height: 100px; /* Ridotta */
+  object-fit: cover; /* Mantiene il rapporto */
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto 10px auto; /* Centrata */
+}
+
+#session-details-container {
+  width: 95%; /* Occupa più spazio rispetto agli altri */
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-out, padding 0.3s ease-out;
+  background: var(--primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: 0 4px 6px var(--shadow);
+  color: var(--text);
+  font-size: 1rem;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#session-details-container.expanded {
+  max-height: 700px;
+  padding: 30px;
+}
+
+/* --- ADATTAMENTO LAYOUT PER SCHERMI GRANDI --- */
+@media (min-width: 1024px) {
+  #session-and-log-container {
+    flex-direction: row;
+    justify-content: center;
+    gap: 30px;
+  }
+
+  #session-details-container {
+    flex: 2;
+  }
+
+  #log-container {
+    flex: 1;
+    width: 40%;
+  }
+}
+  #dati-in-arrivo-container {
+    border: 2px solid #003366;
+    padding: 10px;
+    margin-top: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  #popup-dati {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: none;
+  }
+
+  .popup-content {
+    text-align: center;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+/* Espandi il log-container in modo uniforme */
+#log-container {
+  flex-grow: 1;
+  width: 100%; /* Occupa tutta la colonna disponibile */
+  max-height: 500px; /* Mantieni un'altezza adeguata */
+  overflow-y: auto;
+}
+
+/* Adatta il layout per espandere la sezione log */
+#session-and-log-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
+  width: 80%;
+  margin: 20px auto;
+}
+
+#session-details-container {
+  flex: 2;
+}
+
+#log-container {
+  flex: 3; /* Aumenta la dimensione per l'ultima colonna */
+}
+
+#exercise-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+#toggle-exercise-list {
+  padding: 15px 30px; /* Aumenta altezza e larghezza */
+  font-size: 18px;
+}
+
+/* Aumentare l'altezza del primo pannello Grafana */
+.graphs-container iframe:first-child {
+  height: 300px !important; /* Aumento dell'altezza */
+}
+
+/* Rendi il secondo pannello Grafana quadrato e pari al timer */
+.graphs-container iframe:nth-child(2) {
+  width: 200px !important;
+  height: 200px !important;
+}
+
+/* Sfondo scuro trasparente per il popup */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Contenitore del popup */
+.popup-content {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Titolo del popup */
+.popup-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #003366;
+  margin-bottom: 10px;
+}
+
+/* Testo informativo */
+.popup-text {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Pulsante OK */
+.popup-button {
+  background-color: #003366;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.popup-button:hover {
+  background-color: #002244;
+}
+
+/* Effetto fade-in per una transizione fluida */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Rimuove il bordo da tutti i div che non hanno la classe "dashboard" */
+div:not(.dashboard) {
+  border: none !important;
+}
+
+/* Applica il bordo solo al div della dashboard principale */
+.dashboard {
+  border: 1px solid var(--border) !important;
+}
+
 
 
 
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <!-- Main Section -->
-  <main>
-    <div id="session-header">
-      <h1>Sessione di allenamento di: <span id="user-name">Nome Utente</span></h1>
-      <p>Data di inizio: <span id="start-date"></span></p>
-    </div>
-    <button id="start-session-button" style="padding: 10px 20px; font-size: 16px; background-color: #eeff00; border: none; border-radius: 4px; cursor: pointer; color: #222;">
-      Avvia Sessione
-    </button>
-    <div id="content" class="hidden">
-    <div id="countdown-overlay"></div>
-    <div id="session-and-log-container">
-    <div id="log-container"></div>
+  <div class="flex flex-col w-64 h-screen overflow-hidden text-gray-400 bg-gray-900 rounded">
+    <a class="flex items-center w-full px-3 mt-3" href="#" style="font-size: larger;">
+        <svg class="w-10 h-10 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"></path>
+        </svg>
+        <span class="ml-2 font-bold">The App</span>
+    </a>
 
-    <div id="session-details-container" style="width: 80%; margin: 20px auto;">
-      <!-- Dettagli della sessione verranno generati dinamicamente -->
-    </div>
+    <div class="flex flex-col items-center p-4 border-b border-gray-700 bg-gray-900 text-white">
+      <img id="user-image" class="w-20 h-20 rounded-full border-2 border-gray-600" src="user-placeholder.jpg" alt="User Image">
+      <h2 id="user-name" class="text-xl font-semibold mt-2 text-white">Nome Utente</h2>
+      <p id="user-role" class="text-lg text-gray-400">Ruolo: Caricamento...</p>
   </div>
- <!--
-    <section class="boton-container">
-      <input type="checkbox" id="toggle-btn" checked />
-      <label class="boton-wrapper" for="toggle-btn">
-        <nav class="boton-menu">
-          <ul>
-            <li><a href="#0"><i class="ri-mic-line"></i></a></li>
-            <li><a href="#0"><i class="ri-message-2-line"></i></a></li>
-            <li><a href="#0"><i class="ri-file-line"></i></a></li>
-            <li><a href="#0"><i class="ri-send-plane-2-line"></i></a></li>
-          </ul>
-        </nav>
-      </label>
-    </section>
--->
-    <!-- Pulsante centrale -->
-    <section>
-      
-      
-      <h2>Esercizio Corrente</h2>
-      <div class="flex-container">
-      <input class="menu-checkbox" id="menu" type="checkbox" name="menu" />
-      <nav class="menu">
-        <label class="menu-dots" for="menu">
-          <span class="menu-dot"></span>
-          <span class="menu-dot"></span>
-          <span class="menu-dot"></span>
-        </label>
-        <ul class="menu-items">
-          <li class="menu-item">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 5V19L19 12L8 5Z" fill="currentColor"></path>
-            </svg>
-          </li>
-          <li class="menu-item">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="6" y="6" width="12" height="12" fill="currentColor"></rect>
-            </svg>
-          </li>
-          <li class="menu-item">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 8V5H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M4.93 19.07C2.81 16.95 2.81 13.05 4.93 10.93C7.05 8.81 10.95 8.81 13.07 10.93C15.19 13.05 15.19 16.95 13.07 19.07C10.95 21.19 7.05 21.19 4.93 19.07Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </li>
-          <li class="menu-item">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <rect x="6" y="5" width="4" height="14" fill="currentColor"></rect>
-              <rect x="14" y="5" width="4" height="14" fill="currentColor"></rect>
-            </svg>
-          </li>
-          <li class="menu-item">
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M5 3H15L19 7V21C19 22.1 18.1 23 17 23H7C5.9 23 5 22.1 5 21V3Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="M12 16C14.21 16 16 14.21 16 12C16 9.79 14.21 8 12 8C9.79 8 8 9.79 8 12C8 14.21 9.79 16 12 16Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="M5 3H15L19 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
-          </li>
+  
+    <nav class="flex flex-col w-full px-2 flex-grow">
+        <a href="/main" class="sidebar-link" style="font-size: larger;">HOME</a>
+        <a href="/visualizzaDati" id="menu-visualizza-dati" class="flex items-center px-4 py-3 text-lg hover:bg-gray-700">
+        <a href="/logout" id="auth-link" class="sidebar-link" style="font-size: larger;">Logout</a>
+        <a href="/crea-esercizio" id="menu-create-exercise" class="sidebar-link" style="font-size: larger;">Crea esercizio</a>
+        <a href="/calendario" id="menu-calendar" class="sidebar-link" style="font-size: larger;">Calendario</a>
+    </nav>
+</div>
+  <main>
+
+      <div id="session-details-container" style="width: 50%; padding: 15px;">
+        <h3>Dettagli della Sessione</h3>
+        <ul>
+          <li><strong>Data Inizio:</strong> <span id="session-start">N/A</span></li>
+          <li><strong>Data Fine:</strong> <span id="session-end">N/A</span></li>
+          <li><strong>Connessione Attiva:</strong> <span id="session-connection">No</span></li>
+          <li><strong>Esercizio Corrente:</strong> <span id="current-exercise">Nessuno</span></li>
         </ul>
-        <label for="menu" class="menu-closer-overlay"></label>
-      </nav>
-      <div id="current-exercise-details">
       </div>
+    </div>
+
+    <div id="popup-dati" class="hidden">
+      <div class="popup-content">
+        <h3>Conferma Salvataggio</h3>
+        <ul id="lista-dati-popup"></ul>
+        <button id="invia-dati">Invia Dati</button>
+        <button id="chiudi-popup">Chiudi</button>
+      </div>
+    </div>
+ 
+ 
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="content" class="hidden">
+
+      
+    <section>
+      <div id="countdown-overlay"></div>
+     
+      <div>
+
+
+      <div id="current-exercise-details">
+        
+      </div>
+      <div class="exercise-controls">
+        <button id="end-session-button" style="padding: 10px 20px; font-size: 16px; background-color: #ff4444; border: none; border-radius: 4px; cursor: pointer; color: #fff; display: none;">
+          Termina Sessione
+        </button>
+        <!-- Pulsante Play per avviare l'esercizio -->
+        <button id="start-exercise-button" class="control-button play">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 5V19L19 12L8 5Z" fill="currentColor"></path>
+          </svg>
+        </button>
+      
+        <!-- Pulsante Stop per fermare l'esercizio -->
+        <button id="stop-exercise-button" class="control-button stop">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="6" width="12" height="12" fill="currentColor"></rect>
+          </svg>
+        </button>
+        
+
+
+      </div>
+      <div id="exercise-container">
+        <button id="toggle-exercise-list" class="bg-blue-700 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-800">
+            Cambia Esercizio
+        </button>
+        <div id="exercise-list-wrapper">
+            <div id="exercise-list-container"></div>
+        </div>
+    </div>
+    
       </div>
       
-      <div id="exercise-list-container" style="width: 80%; margin: 20px auto;">
-        <!-- Gli esercizi verranno generati dinamicamente -->
-      </div>
-     
-    </section>
+      <div class="graphs-container">
+          <button id="switch-giroscopio" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Giroscopio</button>
+          <button id="switch-accelerometro" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Accelerometro</button>
+
+          
+          <iframe src="http://localhost:3000/d-solo/null?orgId=1&from=1742715997255&to=1742737597255&timezone=browser&theme=light&panelId=1&__feature.dashboardSceneSolo" width="450" height="200" frameborder="0"></iframe>
+                        <div class="flex-container">
+
+        <iframe src="http://localhost:3000/d-solo/fedni9cobt9fkc/bpm-in-tempo-reale?orgId=1&from=1729350300000&to=1729351500000&timezone=browser&theme=light&panelId=1&__feature.dashboardSceneSolo" width="200" height="200" frameborder="0"></iframe>
+
+
+
+            <div class="card">
+              <div id="timer-container" class="p-4 bg-gray-900 text-green-400 text-center rounded-lg shadow-lg text-xl">00:00</div>
+            </div>
+            </div>
     </div>
+      <div class="side-panel">
+
+        
+        <div id="log-container"></div>
+      </div>
+    </section>
+
+    <div id="session-and-log-container">
+
+
+      <div id="session-details-container" style="width: 80%; margin: 20px auto;">
+    <!-- Dettagli della sessione verranno generati dinamicamente -->
+      </div>
+    </div>
+    </div>
+    <div id="session-header">
+      <button id="start-session-button" class="bg-yellow-400 text-black px-4 py-2 rounded-lg shadow hover:bg-yellow-500">Avvia Sessione</button>
+      </button>
+      
+      </div>
   </main>
 
-  <!-- Footer -->
-  <footer>
-    <p>&copy; 2024, Il Tuo Nome</p>
-  </footer>
+<div id="exercise-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden">
+  <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+      <h2 class="text-xl font-bold mb-4">Seleziona un esercizio</h2>
+      <ul id="exercise-modal-list" class="space-y-2"></ul>
+      <button id="close-modal" class="mt-4 bg-gray-500 text-white px-4 py-2 rounded-lg">Chiudi</button>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   <script src="classi.js"></script>
   <script src="sessione.js"></script>
+  <script src="fetchUserInfo.js"></script>
+  <script src="fetchPatientList.js"></script>
+  <script src="fetchCalendar.js"></script>
+  <script src="authHandler.js"></script>
+
 </body>
 </html>
